@@ -63,7 +63,7 @@
         <!--FML ajout d'une 035 générée à partir de la zone 001-->
         <datafield tag="035" ind1=" " ind2=" ">
             <subfield code="a">
-                <xsl:value-of select="concat('IDREF', $z001)"/>
+                <xsl:value-of select="concat('(IDREF)', $z001)"/>
             </subfield>
         </datafield>
         <!-- Bloc 1XX -->
