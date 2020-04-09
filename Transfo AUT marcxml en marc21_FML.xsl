@@ -79,7 +79,7 @@
             <xsl:with-param name="dstTag">370</xsl:with-param>
             <xsl:with-param name="srcCodes">a</xsl:with-param>
             <xsl:with-param name="dstCodes">c</xsl:with-param>
-            <!--        il faut générer en plus un $2 ISO 3166-1 -->
+   <!--        il faut générer en plus un $2 ISO 3166-1 -->
         </xsl:call-template>
         <!-- 103->046 -->
         <xsl:call-template name="transform-datafield">
@@ -104,7 +104,7 @@
             <xsl:with-param name="dstCodes">2</xsl:with-param>
             <!--  $2 AFNOR sera là de facto   -->
         </xsl:call-template>
-  
+
         <!-- 160->043 -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">160</xsl:with-param>
@@ -113,18 +113,14 @@
         <!-- 180 pas d'équivalent -->
         <!-- Bloc des points d'accès 2XX : NOK car trop sommaire mais OK pour test -->
         <!-- 200->100 -->
-        <xsl:call-template name="transform-datafield">
+        <xsl:call-template name="Z_PT_ACCES_200">
             <xsl:with-param name="srcTag">200</xsl:with-param>
             <xsl:with-param name="dstTag">100</xsl:with-param>
-            <xsl:with-param name="srcCodes">abfc</xsl:with-param>
-            <xsl:with-param name="dstCodes">ach</xsl:with-param>
         </xsl:call-template>
         <!-- 210->110 -->
-        <xsl:call-template name="transform-datafield">
+        <xsl:call-template name="Z_PT_ACCES_210">
             <xsl:with-param name="srcTag">210</xsl:with-param>
             <xsl:with-param name="dstTag">110</xsl:with-param>
-            <xsl:with-param name="srcCodes">acd</xsl:with-param>
-            <xsl:with-param name="dstCodes">abc</xsl:with-param>
         </xsl:call-template>
         <!-- 215->151 -->
         <xsl:call-template name="transform-datafield">
@@ -138,7 +134,7 @@
             <xsl:with-param name="srcTag">216</xsl:with-param>
             <xsl:with-param name="dstTag">150</xsl:with-param>
             <xsl:with-param name="srcCodes">afcxyz</xsl:with-param>
-            <xsl:with-param name="dstCodes">agxzy</xsl:with-param>
+            <xsl:with-param name="dstCodes">aggxzy</xsl:with-param>
         </xsl:call-template>
         <!-- 220->100 -->
         <xsl:call-template name="transform-datafield">
@@ -148,19 +144,15 @@
             <xsl:with-param name="dstCodes">adxzy</xsl:with-param>
         </xsl:call-template>
         <!-- 230->130 -->
-        <xsl:call-template name="transform-datafield">
+        <xsl:call-template name="Z_PT_ACCES_230">
             <xsl:with-param name="srcTag">230</xsl:with-param>
             <xsl:with-param name="dstTag">130</xsl:with-param>
-            <xsl:with-param name="srcCodes">a</xsl:with-param>
-            <xsl:with-param name="dstCodes">a</xsl:with-param>
         </xsl:call-template>
         <!-- RIEN à propose de 231/232 ?  -->
         <!-- 240->100 -->
-        <xsl:call-template name="transform-datafield">
+        <xsl:call-template name="Z_PT_ACCES_240">
             <xsl:with-param name="srcTag">240</xsl:with-param>
             <xsl:with-param name="dstTag">100</xsl:with-param>
-            <xsl:with-param name="srcCodes">at</xsl:with-param>
-            <xsl:with-param name="dstCodes">at</xsl:with-param>
         </xsl:call-template>
         <!-- 250->150 -->
         <xsl:call-template name="transform-datafield">
@@ -217,7 +209,17 @@
             <xsl:with-param name="dstTag">680</xsl:with-param>
         </xsl:call-template>
         <!-- Bloc des 4XX -->
+
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">400</xsl:with-param>
+            <xsl:with-param name="dstTag">400</xsl:with-param>
+        </xsl:call-template>
+
         <!-- Bloc des 5XX -->
+        
+        
+        
+        
         <!-- Bloc des 6XX -->
         <!-- 676->082 -->
         <xsl:call-template name="transform-datafield">
@@ -231,7 +233,12 @@
             <xsl:with-param name="srcTag">686</xsl:with-param>
             <xsl:with-param name="dstTag">065</xsl:with-param>
         </xsl:call-template>
+ 
         <!-- Bloc des 7XX -->
+        
+        
+        
+        
         <!-- Bloc des 8XX -->
         <!-- 801->040 : template particulier ?
 801  si Ind 1= 0 ou 1, alors 040 ; 
@@ -291,7 +298,8 @@ ou alors à l'identique dans une zone locale par exemple 829-->
             <xsl:with-param name="srcTag">836</xsl:with-param>
             <xsl:with-param name="dstTag">682</xsl:with-param>
         </xsl:call-template>
-        <!-- 839->682 : cette zone n'existe pas en unimarcxml ; elle devient une 035$appn fusionné $9sudoc
+ 
+ <!-- 839->682 : cette zone n'existe pas en unimarcxml ; elle devient une 035$appn fusionné $9sudoc
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">839</xsl:with-param>
             <xsl:with-param name="dstTag">682</xsl:with-param>
@@ -305,7 +313,7 @@ ou alors à l'identique dans une zone locale par exemple 829-->
         </xsl:call-template>
         <!-- et nos 9XX ? -->
     </xsl:template>
- 
+
     <xsl:template name="transform-leader">
         <xsl:variable name="leader" select="leader"/>
         <!--FML 14/01/20 Peut-il y avoir une valeur o ? -->
@@ -331,7 +339,8 @@ ou alors à l'identique dans une zone locale par exemple 829-->
             <xsl:with-param name="tag">005</xsl:with-param>
         </xsl:call-template>
         <xsl:call-template name="transform-008"/>
-        <!-- Création de la zone 075 à partir de la position 9 du leader-->
+
+        <!-- Création de la zone 075 à partir de la position 9 du leader -->
         <datafield tag="075" ind1=" " ind2=" ">
             <subfield code="a">
                 <xsl:call-template name="typeAut">
@@ -373,7 +382,7 @@ ou alors à l'identique dans une zone locale par exemple 829-->
         <xsl:variable name="dest07" select="' '"> </xsl:variable>
         <xsl:variable name="dest08">
             <xsl:choose>
-                <xsl:when test="substring($source100,10,3) = 'fre'">
+                <xsl:when test="substring($source100, 10, 3) = 'fre'">
                     <xsl:text>f</xsl:text>
                 </xsl:when>
                 <xsl:otherwise>
@@ -406,21 +415,23 @@ ou alors à l'identique dans une zone locale par exemple 829-->
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:variable name="dest16-31">            
-                    <xsl:text>               </xsl:text>
+        <xsl:variable name="dest16-31">
+            <xsl:text>               </xsl:text>
         </xsl:variable>
         <xsl:variable name="dest32">
             <xsl:choose>
                 <xsl:when test="$source120 != ''">
-                    <xsl:value-of select="substring($source120,1,1)"/>
+                    <xsl:value-of select="substring($source120, 1, 1)"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:text> </xsl:text>
                 </xsl:otherwise>
-            </xsl:choose>      
-        </xsl:variable>      
-        <controlfield tag="008">           
-            <xsl:value-of select="concat($dest00-05, $dest06,$dest07, $dest08, $dest09,$dest10-14,$dest15,$dest16-31,$dest32)"/>
+            </xsl:choose>
+        </xsl:variable>
+        <controlfield tag="008">
+            <xsl:value-of
+                select="concat($dest00-05, $dest06, $dest07, $dest08, $dest09, $dest10-14, $dest15, $dest16-31, $dest32)"
+            />
         </controlfield>
     </xsl:template>
     <xsl:template name="transform-datafield">
@@ -443,6 +454,244 @@ ou alors à l'identique dans une zone locale par exemple 829-->
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
+    <xsl:template name="Z_PT_ACCES_200">
+        <xsl:param name="srcTag"/>
+        <xsl:param name="dstTag" select="@srcTag"/>
+        <xsl:for-each select="datafield[@tag = $srcTag]">
+            <datafield tag="{$dstTag}">
+                <xsl:call-template name="copy-indicators">
+                    <xsl:with-param name="dstTag" select="$dstTag"/>
+                </xsl:call-template>
+                <subfield code="a">
+                    <xsl:value-of select="subfield[@code = 'a']"> </xsl:value-of>
+                    <xsl:if test="subfield[@code = 'b'] != ''">
+                        <xsl:value-of select="concat(', ', subfield[@code = 'b'])"/>
+                    </xsl:if>
+                </subfield>
+                <xsl:if test="subfield[@code = 'd'] != ''">
+                    <subfield code="b">
+                        <xsl:value-of select="subfield[@code = 'd']"/>
+                    </subfield>
+                </xsl:if>
+                 <xsl:if test="subfield[@code = 'g'] != ''">
+                    <subfield code="q">
+                        <xsl:value-of select="subfield[@code = 'g']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'c'] != ''">
+                    <subfield code="c">
+                        <xsl:value-of select="subfield[@code = 'c']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'f'] != ''">
+                    <subfield code="d">
+                        <xsl:value-of select="subfield[@code = 'f']"/>
+                    </subfield>
+                </xsl:if>
+                 <xsl:if test="subfield[@code = 'x'] != ''">
+                    <subfield code="x">
+                        <xsl:value-of select="subfield[@code = 'x']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'y'] != ''">
+                    <subfield code="y">
+                        <xsl:value-of select="subfield[@code = 'y']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'z'] != ''">
+                    <subfield code="z">
+                        <xsl:value-of select="subfield[@code = 'z']"/>
+                    </subfield>
+                </xsl:if>
+            </datafield>
+        </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template name="Z_PT_ACCES_230">
+        <xsl:param name="srcTag"/>
+        <xsl:param name="dstTag" select="@srcTag"/>
+        <xsl:for-each select="datafield[@tag = $srcTag]">
+            <datafield tag="{$dstTag}">
+                <xsl:call-template name="copy-indicators">
+                    <xsl:with-param name="dstTag" select="$dstTag"/>
+                </xsl:call-template>
+                <subfield code="a">
+                    <xsl:value-of select="subfield[@code = 'a']"/>
+                </subfield>
+                <xsl:if test="subfield[@code = 'h'] != ''">
+                    <subfield code="n">
+                        <xsl:value-of select="subfield[@code = 'h']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'i'] != ''">
+                    <subfield code="p">
+                        <xsl:value-of select="subfield[@code = 'i']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'k'] != ''">
+                    <subfield code="f">
+                        <xsl:value-of select="subfield[@code = 'k']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'l'] != ''">
+                    <subfield code="k">
+                        <xsl:value-of select="subfield[@code = 'l']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'm'] != ''">
+                    <subfield code="l">
+                        <xsl:value-of select="subfield[@code = 'm']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'n'] != ''">
+                    <subfield code="g">
+                        <xsl:value-of select="subfield[@code = 'n']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'q'] != ''">
+                    <subfield code="s">
+                        <xsl:value-of select="subfield[@code = 'q']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'r'] != ''">
+                    <subfield code="m">
+                        <xsl:value-of select="subfield[@code = 'r']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 's'] != ''">
+                    <subfield code="g">
+                        <xsl:value-of select="subfield[@code = 's']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'u'] != ''">
+                    <subfield code="r">
+                        <xsl:value-of select="subfield[@code = 'u']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'w'] != ''">
+                    <subfield code="o">
+                        <xsl:value-of select="subfield[@code = 'w']"/>
+                    </subfield>
+                </xsl:if>
+            </datafield>
+        </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template name="Z_PT_ACCES_240">
+        <xsl:param name="srcTag"/>
+        <xsl:param name="dstTag" select="@srcTag"/>
+        <xsl:for-each select="datafield[@tag = $srcTag]">
+            <datafield tag="{$dstTag}">
+                <xsl:call-template name="copy-indicators">
+                    <xsl:with-param name="dstTag" select="$dstTag"/>
+                </xsl:call-template>
+                <subfield code="a">
+                    <xsl:value-of select="subfield[@code = 'a']"/>
+                </subfield>
+                <xsl:if test="subfield[@code = 't'] != ''">
+                    <subfield code="t">
+                        <xsl:value-of select="subfield[@code = 't']"/>
+                    </subfield>
+                </xsl:if>
+<!--    faut-il vraiment faire ça : si  (dates) -> $d 
+                                    et si    (dates ; qualificatif) -> $c qualificatif $d dates-->
+            </datafield>
+        </xsl:for-each>
+    </xsl:template>
+
+    <xsl:template name="Z_PT_ACCES_210">
+        <xsl:param name="srcTag"/>
+        <xsl:param name="dstTag" select="@srcTag"/>
+        <xsl:for-each select="datafield[@tag = $srcTag]">
+            <datafield tag="{$dstTag}">
+                <xsl:call-template name="copy-indicators">
+                    <xsl:with-param name="dstTag" select="$dstTag"/>
+                </xsl:call-template>
+                <subfield code="a">
+                       <xsl:value-of select="subfield[@code = 'a']"/>
+                </subfield>
+                <xsl:if test="subfield[@code = 'b'] != ''">
+                    <subfield code="b">
+                        <xsl:value-of select="subfield[@code = 'b']"/>
+                    </subfield>
+                </xsl:if>
+<!--   <xsl:if test="subfield[@code = 'g'] != ''">
+                      <xsl:text>.</xsl:text>
+                 <xsl:if test="subfield[@code = 'h'] != ''">
+                        <xsl:text>.</xsl:text>
+                </xsl:if>-->
+                <xsl:if test="subfield[@code = 'c'] != ''">
+                    <subfield code="g">
+                        <xsl:value-of select="subfield[@code = 'c']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'd'] != ''">
+                    <subfield code="n">
+                        <xsl:value-of select="subfield[@code = 'd']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'e'] != ''">
+                    <subfield code="c">
+                        <xsl:value-of select="subfield[@code = 'e']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'f'] != ''">
+                    <subfield code="d">
+                        <xsl:value-of select="subfield[@code = 'f']"/>
+                    </subfield>
+                </xsl:if>
+                
+                <xsl:if test="subfield[@code = 'x'] != ''">
+                    <subfield code="x">
+                        <xsl:value-of select="subfield[@code = 'x']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'y'] != ''">
+                    <subfield code="y">
+                        <xsl:value-of select="subfield[@code = 'y']"/>
+                    </subfield>
+                </xsl:if>
+                <xsl:if test="subfield[@code = 'z'] != ''">
+                    <subfield code="z">
+                        <xsl:value-of select="subfield[@code = 'z']"/>
+                    </subfield>
+                </xsl:if>
+            </datafield>
+        </xsl:for-each>
+    </xsl:template>
+
+
+
+
+<!--Poursuivre avc les autres points d'accès et les 400 et les 500
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <xsl:template name="transform-personal-name">
         <xsl:param name="srcTag"/>
         <xsl:param name="dstTag"/>
@@ -455,21 +704,67 @@ ou alors à l'identique dans une zone locale par exemple 829-->
             </datafield>
         </xsl:for-each>
     </xsl:template>
+
     <xsl:template name="copy-indicators">
-        <!--ERM ajout du parametre dstTag pour faire des traitements spécifiques sur les indicateurs de certaines zones-->
+        <!--Traitements spécifiques sur les indicateurs de certaines zones en fonction du pramètre dstTag-->
         <xsl:param name="dstTag"/>
         <xsl:attribute name="ind1">
             <xsl:choose>
                 <xsl:when test="$dstTag = 024">7</xsl:when>
+                <xsl:when test="$dstTag = 300">#</xsl:when>
+                <xsl:when test="$dstTag = 305">#</xsl:when>
+                <xsl:when test="$dstTag = 310">#</xsl:when>
+                <xsl:when test="$dstTag = 320">#</xsl:when>
+                <xsl:when test="$dstTag = 330">#</xsl:when>
+                <xsl:when test="$dstTag = 340">#</xsl:when>
+                
+                <xsl:when test="$dstTag = 100">
+                    <xsl:choose>
+                        <xsl:when test="@ind1 = ' '">
+                            <xsl:value-of select="@ind2"/>
+                        </xsl:when>
+                        <xsl:when test="@ind1 = '|'">
+                            <xsl:value-of select="@ind2"/>
+                        </xsl:when>
+                        <xsl:when test="@ind1 = '#'">
+                            <xsl:value-of select="@ind2"/>
+                        </xsl:when>
+                    </xsl:choose>
+                </xsl:when>
                 <xsl:otherwise>
                     <xsl:value-of select="translate(@ind1, '#', '')"/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:attribute>
         <xsl:attribute name="ind2">
-            <xsl:value-of select="translate(@ind2, '#', '')"/>
+             <xsl:choose>
+                 <xsl:when test="$dstTag = 300">#</xsl:when>
+                 <xsl:when test="$dstTag = 305">#</xsl:when>
+                 <xsl:when test="$dstTag = 310">#</xsl:when>
+                 <xsl:when test="$dstTag = 320">#</xsl:when>
+                 <xsl:when test="$dstTag = 330">#</xsl:when>
+                 <xsl:when test="$dstTag = 340">#</xsl:when>
+              
+                 <xsl:when test="$dstTag = 100">
+                    <xsl:choose>
+                        <xsl:when test="@ind1=' '">
+                            <xsl:value-of select="@ind1"/>
+                        </xsl:when>
+                        <xsl:when test="@ind1='|'">
+                            <xsl:value-of select="@ind1"/>
+                        </xsl:when>
+                        <xsl:when test="@ind1='#'">
+                            <xsl:value-of select="@ind1"/>
+                        </xsl:when>
+                    </xsl:choose>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="translate(@ind2, '#', '')"/>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:attribute>
     </xsl:template>
+    
     <xsl:template name="transform-subfields">
         <xsl:param name="srcCodes" select="$all-codes"/>
         <xsl:param name="dstCodes" select="$srcCodes"/>
@@ -479,7 +774,8 @@ ou alors à l'identique dans une zone locale par exemple 829-->
             </subfield>
         </xsl:for-each>
     </xsl:template>
-    <!--FML ajout Mapping des codes types d'autorités-->
+ 
+    <!--Mapping des codes types d'autorités-->
     <xsl:template name="typeAut">
         <xsl:param name="code"/>
         <xsl:variable name="rolemap"
