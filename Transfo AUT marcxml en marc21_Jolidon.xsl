@@ -28,6 +28,7 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+
     <xsl:template name="record">
         <xsl:if test="@type">
             <xsl:attribute name="type">
@@ -36,12 +37,14 @@
         </xsl:if>
         <xsl:call-template name="transform-leader"/>
         <xsl:variable name="z001" select="controlfield[@tag = '001']"/>
+
         <!-- 010->024 -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">010</xsl:with-param>
             <xsl:with-param name="dstTag">024</xsl:with-param>
             <!--        il faut générer ind0 = rien, ind1 = 7  -->
         </xsl:call-template>
+        
         <!-- 015->024 -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">015</xsl:with-param>
@@ -49,12 +52,14 @@
             <!--        il faut générer ind0 = rien, ind1 = 7  -->
             <!--        $2 ISADN sera là de facto   -->
         </xsl:call-template>
+        
         <!-- 033->024 -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">033</xsl:with-param>
             <xsl:with-param name="dstTag">024</xsl:with-param>
             <!--     il faut générer ind0 = rien, ind1 = 7  -->
         </xsl:call-template>
+        
         <!-- 035->035 -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">035</xsl:with-param>
@@ -66,13 +71,16 @@
                 <xsl:value-of select="concat('(IDREF)', $z001)"/>
             </subfield>
         </datafield>
+        
         <!-- Bloc 1XX -->
-        <!-- 100->008 : OK voir transform008-->
+        <!-- 100->008 : OK voir transform-008-->
         <!-- 101->377   (précision : code de langue MARC : est-ce un souci ?)-->
+        <!-- MIH modif 13/05/20 d'après la loc (https://www.loc.gov/marc/languages/introduction.pdf) le code de langue MARC diffère de l'ISO 639-2 pour 22 langues -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">101</xsl:with-param>
             <xsl:with-param name="dstTag">377</xsl:with-param>
         </xsl:call-template>
+        
         <!-- 102->370 -->
         <!--AJO modif 14/04/20 370 pas OK, en MARC21 en clair. Cible = 043 $c  - testé OK -->
         <xsl:call-template name="transform-datafield">
@@ -80,9 +88,8 @@
             <xsl:with-param name="dstTag">043</xsl:with-param>
             <xsl:with-param name="srcCodes">a</xsl:with-param>
             <xsl:with-param name="dstCodes">c</xsl:with-param>
-   <!--        il faut générer en plus un $2 ISO 3166-1 -->
-   <!--AJO rem: non, pas en 043, car inclus dans la définition MARC21 de $c -->
         </xsl:call-template>
+        
         <!-- 103->046 -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">103</xsl:with-param>
@@ -101,6 +108,7 @@
        <!--  Conversion ajoutée à la fin du template transform-008 (variable 120 déjà définie)  -->
 
         <!-- 123 pas reprise -->
+
         <!-- 152->040 -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">152</xsl:with-param>
@@ -111,11 +119,15 @@
         </xsl:call-template>
 
         <!-- 160->043 -->
+        <!-- MIH 13.05.20 Attention champ 043 Marc21 déjà mappé avec champ 370 Unimarc. Zone 160 Unimarc pas définie par l'IFLA ni par la Transition Bibliographique -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">160</xsl:with-param>
             <xsl:with-param name="dstTag">043</xsl:with-param>
         </xsl:call-template>
+
         <!-- 180 pas d'équivalent -->
+        <!-- MIH 13.05.20 : ce serait utile de conserver l'information. La coder en zone 049 (utilisée en Intermarc) ? -->
+        
         <!-- Bloc des points d'accès 2XX : NOK car trop sommaire mais OK pour test -->
         <!-- 200->100 -->
         <xsl:call-template name="Z_PT_ACCES_200">
@@ -142,11 +154,13 @@
             <xsl:with-param name="dstCodes">aggxzy</xsl:with-param>
         </xsl:call-template>
         <!-- 220->100 -->
+        <!-- MIH 13.05.20 générer un 1er indicateur 3 -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">220</xsl:with-param>
             <xsl:with-param name="dstTag">100</xsl:with-param>
-            <xsl:with-param name="srcCodes">afxyz</xsl:with-param>
-            <xsl:with-param name="dstCodes">adxzy</xsl:with-param>
+            <!-- MIH 13.05.20 modif : codes Unimarc c et d repris en Marc21 g et g -->
+            <xsl:with-param name="srcCodes">acdfxyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">aggdxzy</xsl:with-param>
         </xsl:call-template>
         <!-- 230->130 -->
         <xsl:call-template name="Z_PT_ACCES_230">
@@ -154,6 +168,7 @@
             <xsl:with-param name="dstTag">130</xsl:with-param>
         </xsl:call-template>
         <!-- RIEN à propose de 231/232 ?  -->
+        <!-- MIH 13.05.20 pour l'instant, seule la zone 130 contient des informations sur les titres -->
         <!-- 240->100 -->
         <xsl:call-template name="Z_PT_ACCES_240">
             <xsl:with-param name="srcTag">240</xsl:with-param>
@@ -173,11 +188,15 @@
             <xsl:with-param name="srcCodes">axyz</xsl:with-param>
             <xsl:with-param name="dstCodes">axzy</xsl:with-param>
         </xsl:call-template>
+        
         <!-- Notes 3XX -->
         <!-- 300->680 -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">300</xsl:with-param>
             <xsl:with-param name="dstTag">680</xsl:with-param>
+            <!-- MIH 13.05.20 ajout : mapping code a->i -->
+            <xsl:with-param name="srcCodes">a</xsl:with-param>
+            <xsl:with-param name="dstCodes">i</xsl:with-param>
         </xsl:call-template>
         <!-- 305->360 -->
         <xsl:call-template name="transform-datafield">
@@ -197,33 +216,165 @@
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">320</xsl:with-param>
             <xsl:with-param name="dstTag">680</xsl:with-param>
+            <!-- MIH 13.05.20 ajout : mapping code a->i -->
+            <xsl:with-param name="srcCodes">a</xsl:with-param>
+            <xsl:with-param name="dstCodes">i</xsl:with-param>
         </xsl:call-template>
         <!-- 330->680 -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">330</xsl:with-param>
             <xsl:with-param name="dstTag">680</xsl:with-param>
+            <!-- MIH 13.05.20 ajout : mapping code a->i -->
+            <xsl:with-param name="srcCodes">a</xsl:with-param>
+            <xsl:with-param name="dstCodes">i</xsl:with-param>        
         </xsl:call-template>
         <!-- 340->678 -->
+        <!-- MIH 13.05.20 modif : plutôt mapping 340->680. La zone 678 contient le nom développé d'une personne -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">340</xsl:with-param>
-            <xsl:with-param name="dstTag">678</xsl:with-param>
+            <xsl:with-param name="dstTag">680</xsl:with-param>
+            <!-- MIH 13.05.20 ajout : mapping code a->i -->
+            <xsl:with-param name="srcCodes">a</xsl:with-param>
+            <xsl:with-param name="dstCodes">i</xsl:with-param>  
         </xsl:call-template>
         <!-- 356->680 -->
         <xsl:call-template name="transform-datafield">
             <xsl:with-param name="srcTag">356</xsl:with-param>
             <xsl:with-param name="dstTag">680</xsl:with-param>
+            <!-- MIH 13.05.20 ajout : mapping code a->i -->
+            <xsl:with-param name="srcCodes">a</xsl:with-param>
+            <xsl:with-param name="dstCodes">i</xsl:with-param>          
         </xsl:call-template>
+        
         <!-- Bloc des 4XX -->
-
+        <!-- 400->400 -->
         <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès similaire à "Z_PT_ACCES_200"-->
             <xsl:with-param name="srcTag">400</xsl:with-param>
             <xsl:with-param name="dstTag">400</xsl:with-param>
         </xsl:call-template>
+        <!-- 410->410 -->
+        <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès similaire à "Z_PT_ACCES_210"-->
+            <xsl:with-param name="srcTag">410</xsl:with-param>
+            <xsl:with-param name="dstTag">410</xsl:with-param>
+        </xsl:call-template>
+        <!-- 415->451 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">415</xsl:with-param>
+            <xsl:with-param name="dstTag">451</xsl:with-param>
+            <xsl:with-param name="srcCodes">axyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">axzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 416->450 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">416</xsl:with-param>
+            <xsl:with-param name="dstTag">450</xsl:with-param>
+            <xsl:with-param name="srcCodes">afcxyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">aggxzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 420->400 -->
+        <!-- MIH 13.05.20 générer un 1er indicateur 3 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">420</xsl:with-param>
+            <xsl:with-param name="dstTag">400</xsl:with-param>
+            <!-- MIH 13.05.20 modif : codes Unimarc c et d repris en Marc21 g et g -->
+            <xsl:with-param name="srcCodes">acdfxyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">aggdxzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 430->430 -->
+        <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès similaire à "Z_PT_ACCES_230"-->
+            <xsl:with-param name="srcTag">430</xsl:with-param>
+            <xsl:with-param name="dstTag">430</xsl:with-param>
+        </xsl:call-template>
+        <!-- RIEN à propose de 431/432 ?  -->
+        <!-- MIH 13.05.20 pour l'instant, seule la zone 430 contient des informations sur les titres -->
+        <!-- 440->400 -->
+        <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès similaire à "Z_PT_ACCES_240"-->
+            <xsl:with-param name="srcTag">440</xsl:with-param>
+            <xsl:with-param name="dstTag">400</xsl:with-param>
+        </xsl:call-template>
+        <!-- 450->450 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">450</xsl:with-param>
+            <xsl:with-param name="dstTag">450</xsl:with-param>
+            <xsl:with-param name="srcCodes">axyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">axzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 480->455 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">480</xsl:with-param>
+            <xsl:with-param name="dstTag">455</xsl:with-param>
+            <xsl:with-param name="srcCodes">axyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">axzy</xsl:with-param>
+        </xsl:call-template>
 
         <!-- Bloc des 5XX -->
-        
-        
-        
+        <!-- 500->500-->
+        <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès, similaire à "Z_PT_ACCES_200"-->
+            <xsl:with-param name="srcTag">500</xsl:with-param>
+            <xsl:with-param name="dstTag">500</xsl:with-param>
+        </xsl:call-template>
+        <!-- 510->510 -->
+        <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès, similaire à "Z_PT_ACCES_210"-->
+            <xsl:with-param name="srcTag">510</xsl:with-param>
+            <xsl:with-param name="dstTag">510</xsl:with-param>
+        </xsl:call-template>
+        <!-- 515->551 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">515</xsl:with-param>
+            <xsl:with-param name="dstTag">551</xsl:with-param>
+            <xsl:with-param name="srcCodes">axyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">axzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 516->550 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">216</xsl:with-param>
+            <xsl:with-param name="dstTag">150</xsl:with-param>
+            <xsl:with-param name="srcCodes">afcxyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">aggxzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 520->500 -->
+        <!-- MIH 13.05.20 générer un 1er indicateur 3 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">520</xsl:with-param>
+            <xsl:with-param name="dstTag">500</xsl:with-param>
+            <!-- MIH 13.05.20 modif : codes Unimarc c et d repris en Marc21 g et g -->
+            <xsl:with-param name="srcCodes">acdfxyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">aggdxzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 530->530 -->
+        <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès, similaire à "Z_PT_ACCES_230"-->
+            <xsl:with-param name="srcTag">530</xsl:with-param>
+            <xsl:with-param name="dstTag">530</xsl:with-param>
+        </xsl:call-template>
+        <!-- RIEN à propose de 531/532 ?  -->
+        <!-- MIH 13.05.20 pour l'instant, seule la zone 530 contient des informations sur les titres -->
+        <!-- 540->500 -->
+        <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès similaire à "Z_PT_ACCES_240"-->
+            <xsl:with-param name="srcTag">540</xsl:with-param>
+            <xsl:with-param name="dstTag">500</xsl:with-param>
+        </xsl:call-template>
+        <!-- 550->550 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">550</xsl:with-param>
+            <xsl:with-param name="dstTag">550</xsl:with-param>
+            <xsl:with-param name="srcCodes">axyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">axzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 580->555 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">580</xsl:with-param>
+            <xsl:with-param name="dstTag">555</xsl:with-param>
+            <xsl:with-param name="srcCodes">axyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">axzy</xsl:with-param>
+        </xsl:call-template>     
         
         <!-- Bloc des 6XX -->
         <!-- 676->082 -->
@@ -240,10 +391,69 @@
         </xsl:call-template>
  
         <!-- Bloc des 7XX -->
-        
-        
-        
-        
+        <!-- MIH 13.05.20 les traductions et translittérations d'un point d'accès autorisé sont signalées en zones 4XX en Marc21 -->
+        <!-- 700->400 -->
+        <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès similaire à "Z_PT_ACCES_200"-->
+            <xsl:with-param name="srcTag">700</xsl:with-param>
+            <xsl:with-param name="dstTag">400</xsl:with-param>
+        </xsl:call-template>
+        <!-- 710->410 -->
+        <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès similaire à "Z_PT_ACCES_210"-->
+            <xsl:with-param name="srcTag">710</xsl:with-param>
+            <xsl:with-param name="dstTag">410</xsl:with-param>
+        </xsl:call-template>
+        <!-- 715->451 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">715</xsl:with-param>
+            <xsl:with-param name="dstTag">451</xsl:with-param>
+            <xsl:with-param name="srcCodes">axyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">axzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 716->450 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">716</xsl:with-param>
+            <xsl:with-param name="dstTag">450</xsl:with-param>
+            <xsl:with-param name="srcCodes">afcxyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">aggxzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 720->400 -->
+        <!-- MIH 13.05.20 générer un 1er indicateur 3 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">720</xsl:with-param>
+            <xsl:with-param name="dstTag">400</xsl:with-param>
+            <!-- MIH 13.05.20 modif : codes Unimarc c et d repris en Marc21 g et g -->
+            <xsl:with-param name="srcCodes">acdfxyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">aggdxzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 730->430 -->
+        <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès similaire à "Z_PT_ACCES_230"-->
+            <xsl:with-param name="srcTag">730</xsl:with-param>
+            <xsl:with-param name="dstTag">430</xsl:with-param>
+        </xsl:call-template>
+        <!-- 740->400 -->
+        <xsl:call-template name="transform-datafield">
+        <!-- MIH 13.05.2020 Besoin d'une règle propre au point d'accès similaire à "Z_PT_ACCES_240"-->
+            <xsl:with-param name="srcTag">740</xsl:with-param>
+            <xsl:with-param name="dstTag">400</xsl:with-param>
+        </xsl:call-template>
+        <!-- 750->450 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">750</xsl:with-param>
+            <xsl:with-param name="dstTag">450</xsl:with-param>
+            <xsl:with-param name="srcCodes">axyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">axzy</xsl:with-param>
+        </xsl:call-template>
+        <!-- 780->455 -->
+        <xsl:call-template name="transform-datafield">
+            <xsl:with-param name="srcTag">780</xsl:with-param>
+            <xsl:with-param name="dstTag">455</xsl:with-param>
+            <xsl:with-param name="srcCodes">axyz</xsl:with-param>
+            <xsl:with-param name="dstCodes">axzy</xsl:with-param>
+        </xsl:call-template>
+            
         <!-- Bloc des 8XX -->
         <!-- 801->040 : template particulier ?
 801  si Ind 1= 0 ou 1, alors 040 ; 
@@ -367,6 +577,8 @@ ou alors à l'identique dans une zone locale par exemple 829-->
             </controlfield>
         </xsl:for-each>
     </xsl:template>
+    
+    <!-- Génération des zones 100, 106, 120, 154 à partir de la 008 -->
     <xsl:template name="transform-008">
         <xsl:variable name="source100" select="datafield[@tag = '100']/subfield[@code = 'a']"/>
         <xsl:variable name="source106" select="datafield[@tag = '106']"/>
@@ -489,6 +701,8 @@ ou alors à l'identique dans une zone locale par exemple 829-->
            </xsl:if>
         </xsl:if>  
     </xsl:template>
+
+    <!-- Règle générale de transformation des étiquettes Marc et des codes de sous-champs -->
     <xsl:template name="transform-datafield">
         <xsl:param name="srcTag"/>
         <xsl:param name="dstTag" select="@srcTag"/>
@@ -509,6 +723,7 @@ ou alors à l'identique dans une zone locale par exemple 829-->
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
+
     <xsl:template name="Z_PT_ACCES_200">
         <xsl:param name="srcTag"/>
         <xsl:param name="dstTag" select="@srcTag"/>
@@ -671,7 +886,7 @@ ou alors à l'identique dans une zone locale par exemple 829-->
                         <xsl:value-of select="subfield[@code = 'b']"/>
                     </subfield>
                 </xsl:if>
-<!--   <xsl:if test="subfield[@code = 'g'] != ''">
+                <!--   <xsl:if test="subfield[@code = 'g'] != ''">
                       <xsl:text>.</xsl:text>
                  <xsl:if test="subfield[@code = 'h'] != ''">
                         <xsl:text>.</xsl:text>
@@ -762,7 +977,7 @@ ou alors à l'identique dans une zone locale par exemple 829-->
     </xsl:template>
 
     <xsl:template name="copy-indicators">
-        <!--Traitements spécifiques sur les indicateurs de certaines zones en fonction du pramètre dstTag-->
+        <!--Traitements spécifiques sur les indicateurs de certaines zones en fonction du paramètre dstTag-->
         <xsl:param name="dstTag"/>
         <xsl:attribute name="ind1">
             <xsl:choose>
