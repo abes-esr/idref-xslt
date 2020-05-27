@@ -725,6 +725,7 @@ ou alors à l'identique dans une zone locale par exemple 829-->
     </xsl:template>
 
     <xsl:template name="Z_PT_ACCES_200">
+    <!-- MIH 20.05.20 : ordre des sous-champs pris en compte ? -->
         <xsl:param name="srcTag"/>
         <xsl:param name="dstTag" select="@srcTag"/>
         <xsl:for-each select="datafield[@tag = $srcTag]">
@@ -739,6 +740,7 @@ ou alors à l'identique dans une zone locale par exemple 829-->
                     </xsl:if>
                 </subfield>
                 <xsl:if test="subfield[@code = 'd'] != ''">
+                <!-- MIH 20.05.20 : faut-il ajouter une règle spécifique pour le sous-champ $D ? -->
                     <subfield code="b">
                         <xsl:value-of select="subfield[@code = 'd']"/>
                     </subfield>
@@ -764,15 +766,32 @@ ou alors à l'identique dans une zone locale par exemple 829-->
                     </subfield>
                 </xsl:if>
                 <xsl:if test="subfield[@code = 'y'] != ''">
-                    <subfield code="y">
+                    <subfield code="z">
                         <xsl:value-of select="subfield[@code = 'y']"/>
                     </subfield>
                 </xsl:if>
                 <xsl:if test="subfield[@code = 'z'] != ''">
-                    <subfield code="z">
+                    <subfield code="y">
                         <xsl:value-of select="subfield[@code = 'z']"/>
                     </subfield>
                 </xsl:if>
+                <!-- MIH 20.05.20 : règles pour le sous-champ $6
+                pas d'équivalent MARC21 -->
+                <!-- MIH 27.05.20 : règles pour le sous-champ $7
+                positions 0-1 : pas d'équivalent MARC21
+                positions 2-3 : pas d'équivalent MARC21
+                positions 4-5 : pas d'équivalent MARC21. Pratique Ex Libris (Alma) : $9
+                La norme utilisée n'est pas déclarée, mais c'est sans doute la norme MARC21.
+                positions 5-6 : pas d'équivalent MARC21
+                -->
+                <!-- MIH 26.05.20 : règles pour le sous-champ $8
+                positions 0-2 : pas d'équivalent MARC21
+                positions 3-5 : pas d'équivalent MARC21 officiel. Pratique Ex Libris (Alma) : $9
+                La norme utilisée n'est pas déclarée, mais c'est sans doute la norme MARC21.
+                -->
+                <!-- MIH 26.05.20 : règles pour le sous-champ $9
+                pas d'équivalent MARC21
+                -->
             </datafield>
         </xsl:for-each>
     </xsl:template>
