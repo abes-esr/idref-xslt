@@ -724,6 +724,7 @@ ou alors à l'identique dans une zone locale par exemple 829-->
         </xsl:if>
     </xsl:template>
 
+    <!-- Point d'accès autorisé - Nom de personne -->
     <xsl:template name="Z_PT_ACCES_200">
     <!-- MIH 20.05.20 : ordre des sous-champs pris en compte ? -->
         <xsl:param name="srcTag"/>
@@ -796,6 +797,7 @@ ou alors à l'identique dans une zone locale par exemple 829-->
         </xsl:for-each>
     </xsl:template>
     
+    <!-- Point d'accès autorisé - Titre uniforme -->
     <xsl:template name="Z_PT_ACCES_230">
         <xsl:param name="srcTag"/>
         <xsl:param name="dstTag" select="@srcTag"/>
@@ -866,6 +868,7 @@ ou alors à l'identique dans une zone locale par exemple 829-->
         </xsl:for-each>
     </xsl:template>
     
+    <!-- Point d'accès autorisé - Auteur/titre -->
     <xsl:template name="Z_PT_ACCES_240">
         <xsl:param name="srcTag"/>
         <xsl:param name="dstTag" select="@srcTag"/>
@@ -889,6 +892,8 @@ ou alors à l'identique dans une zone locale par exemple 829-->
         </xsl:for-each>
     </xsl:template>
 
+    <!-- Point d'accès autorisé - Nom de Collectivité -->
+    <!-- collectivité 1er indic = 0, congrès 1er indic = 1 -->
     <xsl:template name="Z_PT_ACCES_210">
         <xsl:param name="srcTag"/>
         <xsl:param name="dstTag" select="@srcTag"/>
@@ -937,12 +942,12 @@ ou alors à l'identique dans une zone locale par exemple 829-->
                     </subfield>
                 </xsl:if>
                 <xsl:if test="subfield[@code = 'y'] != ''">
-                    <subfield code="y">
+                    <subfield code="z">
                         <xsl:value-of select="subfield[@code = 'y']"/>
                     </subfield>
                 </xsl:if>
                 <xsl:if test="subfield[@code = 'z'] != ''">
-                    <subfield code="z">
+                    <subfield code="y">
                         <xsl:value-of select="subfield[@code = 'z']"/>
                     </subfield>
                 </xsl:if>
