@@ -1,2 +1,1 @@
-Cet XSL est en cours d'élaboration.
-Il permet de transformer du marc-xml autorité en marc21 autorité.
+Cet XSL permet de transformer du marcxml "IdRef" en marc21 autorité.
