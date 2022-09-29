@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--     XSL de transformation du marcXml Bnf en marcXml Sudoc. (ERM créé 2020)
     Objectifs : rendre conforme au marcXml Sudoc :
-    v 20201109
+    v 20220920
   -->
 <xsl:stylesheet exclude-result-prefixes="srw mxc xsi xs" version="2.0"
-                xmlns:mxc="info:lc/xmlns/marcxchange-v2" xmlns:srw="http://www.loc.gov/zing/srw/"
-                xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    xmlns:mxc="info:lc/xmlns/marcxchange-v2" xmlns:srw="http://www.loc.gov/zing/srw/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output encoding="UTF-8" indent="yes" method="xml"/>
     <xsl:param name="token"/>
     <xsl:strip-space elements="*"/>
@@ -15,7 +15,7 @@
         <xsl:value-of select="format-date(current-date(), '[Y0001][M01][D01]')"/>
     </xsl:variable>
     <xsl:variable name="g_carNonTri"
-    >de De des Des du Du l' L' le Le la La [la] [La] les Les un Un une Une
+        >de De des Des du Du l' L' le Le la La [la] [La] les Les un Un une Une
         die Die (die) (Die) das Das
         the The [the] [The]
         los Los las Las el El uno Uno una Una
@@ -23,11 +23,11 @@
     </xsl:variable>
     <xsl:template match="/">
         <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-                       xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <soap:Body>
                 <ucp:updateRequest xmlns:srw="http://www.loc.gov/zing/srw/"
-                                   xmlns:ucp="http://www.loc.gov/zing/srw/update/">
+                    xmlns:ucp="http://www.loc.gov/zing/srw/update/">
                     <srw:version>1.0</srw:version>
                     <ucp:action>info:srw/action/1/creaute</ucp:action>
                     <srw:recordIdentifier/>
@@ -56,17 +56,17 @@
     <xsl:template match="srw:recordData">
         <!--ERM le 24/06/20 -->
         <!--arbre1 : variable qui contient les zones non ordonnées-->
-        <xsl:variable name="arbre1">
-            <record>
-                <!--ERM le 24/06/20 -->
-                <!--devenu inutile -->
-                <xsl:variable name="leaderDeb">
-                    <xsl:value-of select="substring(mxc:record/mxc:leader, 1, 17)"/>
-                </xsl:variable>
-                <xsl:variable name="leaderFin">
-                    <xsl:value-of select="substring(mxc:record/mxc:leader, 19)"/>
-                </xsl:variable>
-                <!--   <xsl:choose>
+         <xsl:variable name="arbre1">
+        <record>
+            <!--ERM le 24/06/20 -->
+            <!--devenu inutile -->
+            <xsl:variable name="leaderDeb">
+                <xsl:value-of select="substring(mxc:record/mxc:leader, 1, 17)"/>
+            </xsl:variable>
+            <xsl:variable name="leaderFin">
+                <xsl:value-of select="substring(mxc:record/mxc:leader, 19)"/>
+            </xsl:variable>
+            <!--   <xsl:choose>
                     <xsl:when
                         test="mxc:record/mxc:datafield[substring(@tag, 1, 1) = '7'][mxc:subfield[@code = '3'][normalize-space(text()) != '']]">
                         <xsl:element name="leader">
@@ -74,238 +74,250 @@
                         </xsl:element>
                     </xsl:when>
                 </xsl:choose>-->
-                <xsl:variable name="leader09_008">
-                    <xsl:call-template name="typeAut">
-                        <xsl:with-param name="code" select="substring($leaderDeb, 10, 1)"/>
-                    </xsl:call-template>
-                </xsl:variable>
-                <datafield tag="008">
-                    <!--ind1=" " ind2=" "-->
-                    <subfield code="a">
-                        <xsl:value-of select="concat('T', $leader09_008, '5')"/>
-                    </subfield>
-                </datafield>
-                <xsl:for-each select="//mxc:datafield[@tag = '010'][mxc:subfield/@code = 'a']">
-                    <datafield ind1="#" ind2="#" tag="010">
-                        <xsl:apply-templates select="mxc:subfield[@code = 'a']"/>
-                        <xsl:choose>
-                            <xsl:when test="mxc:subfield[@code = '2'] != 'ISNI'">
-                                <subfield code="2">ISNI</subfield>
-                                <subfield code="C">
-                                    <xsl:value-of select="mxc:subfield[@code = '2']"/>
-                                </subfield>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:apply-templates select="mxc:subfield[@code = '2']"/>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:for-each select="mxc:subfield[string(@code) &gt; 'a']">
-                            <xsl:sort order="ascending" select="string(@code)"/>
-                            <xsl:apply-templates select="."/>
-                        </xsl:for-each>
-                    </datafield>
-                </xsl:for-each>
-                <xsl:call-template name="z033"/>
-                <xsl:call-template name="z035"/>
-                <xsl:apply-templates
-                        select="mxc:record/mxc:controlfield[not(@tag = '001' or @tag = '003' or @tag = '005')]"/>
-                <xsl:variable name="test101">
-                    <xsl:for-each select="//mxc:datafield[@tag = '101']/mxc:subfield[@code = 'a']">
-                        <xsl:if test="string-length(normalize-space(.)) = 3">OK</xsl:if>
-                    </xsl:for-each>
-                </xsl:variable>
-                <xsl:if test="contains($test101, 'OK')">
-                    <datafield ind1="#" ind2="#" tag="101">
-                        <xsl:for-each select="//mxc:datafield[@tag = '101']/mxc:subfield[@code = 'a']">
-                            <xsl:if
-                                    test="string-length(normalize-space(.)) = 3">
-                                <subfield code="a">
-                                    <xsl:value-of select="."/>
-                                </subfield>
-                            </xsl:if>
-                        </xsl:for-each>
-                    </datafield>
-                </xsl:if>
-                <!--ERM le 24/06/20 -->
-                <!--devenu inutile avec le tri pos-traitement
-             <xsl:apply-templates select="//mxc:datafield[@tag = '102']"/>-->
-                <xsl:call-template name="z103"/>
-                <xsl:call-template name="z106">
-                    <xsl:with-param name="leader09_008" select="$leader09_008"/>
+            <xsl:variable name="leader09_008">
+                <xsl:call-template name="typeAut">
+                    <xsl:with-param name="code" select="substring($leaderDeb, 10, 1)"/>
                 </xsl:call-template>
-                <xsl:for-each select="//mxc:datafield[@tag = '123']">
-                    <datafield ind1="#" ind2="#" tag="123">
-                        <xsl:for-each select="mxc:subfield">
-                            <subfield>
-                                <xsl:attribute name="code" select="@code"/>
-                                <xsl:value-of select="lower-case(text())"/>
-                            </subfield>
-                        </xsl:for-each>
-                    </datafield>
-                </xsl:for-each>
-                <xsl:for-each select="//mxc:datafield[@tag = '128']">
+            </xsl:variable>
+            <datafield tag="008">
+                <!--ind1=" " ind2=" "-->
+                <subfield code="a">
+                    <xsl:value-of select="concat('T', $leader09_008, '5')"/>
+                </subfield>
+            </datafield>
+            <xsl:for-each select="//mxc:datafield[@tag = '010'][mxc:subfield/@code = 'a']">
+                <datafield ind1="#" ind2="#" tag="010">
+                    <xsl:apply-templates select="mxc:subfield[@code = 'a']"/>
                     <xsl:choose>
-                        <xsl:when
-                                test="//mxc:datafield[@tag = '210']/mxc:subfield[@code = 'a'][text() != '']"/>
-                        <xsl:when test="$leader09_008 = 'b'"/>
+                        <xsl:when test="mxc:subfield[@code = '2'] != 'ISNI'">
+                            <subfield code="2">ISNI</subfield>
+                            <subfield code="C">
+                                <xsl:value-of select="mxc:subfield[@code = '2']"/>
+                            </subfield>
+                        </xsl:when>
                         <xsl:otherwise>
-                            <xsl:call-template name="z128"/>
+                            <xsl:apply-templates select="mxc:subfield[@code = '2']"/>
                         </xsl:otherwise>
                     </xsl:choose>
+                    <xsl:for-each select="mxc:subfield[string(@code) &gt; 'a']">
+                        <xsl:sort order="ascending" select="string(@code)"/>
+                        <xsl:apply-templates select="."/>
+                    </xsl:for-each>
+                </datafield>
+            </xsl:for-each>
+            <xsl:call-template name="z033"/>
+            <xsl:call-template name="z035"/>
+            <xsl:apply-templates
+                select="mxc:record/mxc:controlfield[not(@tag = '001' or @tag = '003' or @tag = '005')]"/>
+            <xsl:variable name="test101">
+                <xsl:for-each select="//mxc:datafield[@tag = '101']/mxc:subfield[@code = 'a']">
+                    <xsl:if test="string-length(normalize-space(.)) = 3">OK</xsl:if>
                 </xsl:for-each>
-                <xsl:call-template name="z150"/>
-                <xsl:for-each select="//mxc:datafield[@tag = '210']">
-                    <xsl:call-template name="zX10">
-                        <xsl:with-param name="zone" select="@tag"/>
-                    </xsl:call-template>
-                </xsl:for-each>
-                <xsl:for-each select="//mxc:datafield[@tag = '230'] | //mxc:datafield[@tag = '240']">
-                    <xsl:call-template name="zXXX">
-                        <xsl:with-param name="zone" select="@tag"/>
-                    </xsl:call-template>
-                </xsl:for-each>
-                <xsl:for-each select="//mxc:datafield[@tag = '330']">
-                    <datafield ind1="0" ind2="#" tag="330">
-                        <xsl:for-each select="mxc:subfield[@code = 'a']/tokenize(text(), '. -')">
+            </xsl:variable>
+            <xsl:if test="contains($test101, 'OK')">
+                <datafield ind1="#" ind2="#" tag="101">
+                    <xsl:for-each select="//mxc:datafield[@tag = '101']/mxc:subfield[@code = 'a']">
+                        <xsl:if test="string-length(normalize-space(.)) = 3">
+                            <subfield code="a">
+                                <xsl:value-of select="."/>
+                            </subfield>
+                        </xsl:if>
+                    </xsl:for-each>
+                </datafield>
+            </xsl:if>
+            <!--ERM le 24/06/20 -->
+            <!--devenu inutile avec le tri pos-traitement
+             <xsl:apply-templates select="//mxc:datafield[@tag = '102']"/>-->
+            <xsl:call-template name="z103"/>
+            <xsl:call-template name="z106">
+                <xsl:with-param name="leader09_008" select="$leader09_008"/>
+            </xsl:call-template>
+            <xsl:for-each select="//mxc:datafield[@tag = '123']">
+                <datafield ind1="#" ind2="#" tag="123">
+                    <xsl:for-each select="mxc:subfield">
+                        <subfield>
+                            <xsl:attribute name="code" select="@code"/>
+                            <xsl:value-of select="lower-case(text())"/>
+                        </subfield>
+                    </xsl:for-each>
+                </datafield>
+            </xsl:for-each>
+            <xsl:for-each select="//mxc:datafield[@tag = '128']">
+                <xsl:choose>
+                    <xsl:when
+                        test="//mxc:datafield[@tag = '210']/mxc:subfield[@code = 'a'][text() != '']"/>
+                    <xsl:when test="$leader09_008 = 'b'"/>
+                    <xsl:otherwise>
+                        <xsl:call-template name="z128"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
+            <xsl:call-template name="z150"/>
+            <xsl:for-each select="//mxc:datafield[@tag = '210']">
+                <xsl:call-template name="zX10">
+                    <xsl:with-param name="zone" select="@tag"/>
+                </xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="//mxc:datafield[@tag = '230'] | //mxc:datafield[@tag = '240']">
+                <xsl:call-template name="zXXX">
+                    <xsl:with-param name="zone" select="@tag"/>
+                </xsl:call-template>
+            </xsl:for-each>
+            <!--ERM sept 22 suppression du découpage de 330$a qui ne donne pas le bon résultat                           
+                           <xsl:for-each select="mxc:subfield[@code = 'a']/tokenize(text(), '. -')">
                             <subfield code="a">
                                 <xsl:value-of select="normalize-space(.)"/>
                             </subfield>
-                        </xsl:for-each>
-                    </datafield>
-                </xsl:for-each>
-                <!--ERM le 24/06/20 -->
-                <!-- pour les zones qui commencent par : 30X / 34X / 35X / 36X
+                        </xsl:for-each>-->
+            <xsl:for-each select="//mxc:datafield[@tag = '330']">
+                <datafield ind1="0" ind2="#" tag="330">
+                    <subfield code="a">
+                        <xsl:value-of select="normalize-space(.)"/>
+                    </subfield>
+                </datafield>
+            </xsl:for-each>
+            <!--ERM le 24/06/20 -->
+            <!-- pour les zones qui commencent par : 30X / 34X / 35X / 36X
                     - celles qui n'ont que des $a, génèrent autant de zones 300$a (pour les 30X) ou 340$a (pour les 34X / 35X / 36X) que de chaines séparées par '. -'
                     - celles qui ont d'autre sous-zones concatènent les sous-zones Bnf dans : 300$a (pour les 30X) ou 340$a (pour les 34X / 35X / 36X)
                     -->
-                <!--Pour les zones qui commencent par : 30X / 34X / 35X / 36X  -->
-                <xsl:for-each
-                        select="//mxc:datafield[starts-with(@tag, '30') and @tag != '305'] | //mxc:datafield[starts-with(@tag, '34')] | //mxc:datafield[starts-with(@tag, '35') and @tag != '356'] | //mxc:datafield[starts-with(@tag, '36')]">
-                    <xsl:variable name="tagSource" select="@tag"/>
-                    <xsl:variable name="tagDest">
-                        <xsl:choose>
-                            <xsl:when
-                                    test="@tag = '300' or @tag = '303' or @tag = '349' or @tag = '353'"
-                            >300</xsl:when>
-                            <xsl:otherwise>340</xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:variable>
+            <!--Pour les zones qui commencent par : 30X / 34X / 35X / 36X  -->
+            <xsl:for-each
+                select="//mxc:datafield[starts-with(@tag, '30') and @tag != '305'] | //mxc:datafield[starts-with(@tag, '34')] | //mxc:datafield[starts-with(@tag, '35') and @tag != '356'] | //mxc:datafield[starts-with(@tag, '36')]">
+                <xsl:variable name="tagSource" select="@tag"/>
+                <xsl:variable name="tagDest">
                     <xsl:choose>
                         <xsl:when
-                                test="@tag = '301' or @tag = '304' or @tag = '341' or @tag = '342' or @tag = '346' or @tag = '349' or @tag = '352' or @tag = '360' or @tag = '361'">
-                            <!--diffrentes sous-zones à concatener dans 300$a  ou  340$a-->
-                            <xsl:call-template name="z3XX">
-                                <xsl:with-param name="tagSource" select="$tagSource"/>
-                                <xsl:with-param name="tagDest" select="$tagDest"/>
-                                <xsl:with-param name="mode" select="'concat'"/>
-                            </xsl:call-template>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <!--seulement un ou plusieurs $a
-                            ALORS pour chaque sous-zone $a, on découpe (séparateur '. -') pour faire une zone  300$a   ou  340$a-->
-                            <xsl:for-each select="mxc:subfield[@code = 'a']">
-                                <xsl:for-each select="tokenize(text(), '. -')">
-                                    <xsl:call-template name="z3XX">
-                                        <xsl:with-param name="tagSource" select="$tagSource"/>
-                                        <xsl:with-param name="tagDest" select="$tagDest"/>
-                                        <xsl:with-param name="mode" select="'tokenize'"/>
-                                        <xsl:with-param name="libelle">
-                                            <xsl:choose>
-                                                <xsl:when test="$tagSource = '302'">
-                                                    <xsl:text>Nationalité : </xsl:text>
-                                                </xsl:when>
-                                                <xsl:when test="$tagSource = '303'">
-                                                    <xsl:text>Adresse : </xsl:text>
-                                                </xsl:when>
-                                                <xsl:when test="$tagSource = '307'">
-                                                    <xsl:text>Composition du groupe : </xsl:text>
-                                                </xsl:when>
-                                                <xsl:when test="$tagSource = '343'">
-                                                    <xsl:text>Profession annexe : </xsl:text>
-                                                </xsl:when>
-                                                <xsl:when test="$tagSource = '344'">
-                                                    <xsl:text>Gamme des produits et services de la marque : </xsl:text>
-                                                </xsl:when>
-                                                <xsl:when test="$tagSource = '345'">
-                                                    <xsl:text>Interventions : </xsl:text>
-                                                </xsl:when>
-                                                <xsl:when test="$tagSource = '347'">
-                                                    <xsl:text>Titulature : </xsl:text>
-                                                </xsl:when>
-                                                <xsl:when test="$tagSource = '350'">
-                                                    <xsl:text>Activité liée à la production artistique : </xsl:text>
-                                                </xsl:when>
-                                                <xsl:when test="$tagSource = '351'">
-                                                    <xsl:text>Technique : </xsl:text>
-                                                </xsl:when>
-                                                <xsl:when test="$tagSource = '353'">
-                                                    <xsl:text>Influence : </xsl:text>
-                                                </xsl:when>
-                                                <xsl:when test="$tagSource = '354'">
-                                                    <xsl:text>Devise(s) : </xsl:text>
-                                                </xsl:when>
-                                                <xsl:otherwise/>
-                                            </xsl:choose>
-                                        </xsl:with-param>
-                                    </xsl:call-template>
-                                </xsl:for-each>
-                            </xsl:for-each>
-                        </xsl:otherwise>
+                            test="@tag = '300' or @tag = '303' or @tag = '349' or @tag = '353'"
+                            >300</xsl:when>
+                        <xsl:otherwise>340</xsl:otherwise>
                     </xsl:choose>
-                </xsl:for-each>
-                <xsl:for-each select="//mxc:datafield[@tag = '410']">
-                    <xsl:call-template name="zX10">
-                        <xsl:with-param name="zone" select="@tag"/>
-                    </xsl:call-template>
-                </xsl:for-each>
-                <xsl:for-each select="//mxc:datafield[@tag = '430'] | //mxc:datafield[@tag = '440']">
-                    <xsl:call-template name="zXXX">
-                        <xsl:with-param name="zone" select="@tag"/>
-                    </xsl:call-template>
-                </xsl:for-each>
-                <xsl:for-each select="//mxc:datafield[@tag = '510']">
-                    <xsl:call-template name="zX10">
-                        <xsl:with-param name="zone" select="@tag"/>
-                    </xsl:call-template>
-                </xsl:for-each>
-                <xsl:for-each
-                        select="//mxc:datafield[starts-with(@tag, '5') and (not(@tag = '510'))]">
-                    <xsl:call-template name="zXXX">
-                        <xsl:with-param name="zone" select="@tag"/>
-                    </xsl:call-template>
-                </xsl:for-each>
-                <xsl:for-each select="//mxc:datafield[@tag = '710']">
-                    <xsl:call-template name="zX10">
-                        <xsl:with-param name="zone" select="@tag"/>
-                    </xsl:call-template>
-                </xsl:for-each>
-                <xsl:for-each select="//mxc:datafield[@tag = '730'] | //mxc:datafield[@tag = '740']">
-                    <xsl:call-template name="zXXX">
-                        <xsl:with-param name="zone" select="@tag"/>
-                    </xsl:call-template>
-                </xsl:for-each>
-                <xsl:for-each select="//mxc:datafield[@tag = '810']/mxc:subfield[@code = 'a']">
-                    <xsl:call-template name="z810"/>
-                </xsl:for-each>
-                <datafield ind1="#" ind2="#" tag="899">
-                    <xsl:variable name="dateJour2">
-                        <xsl:value-of select="format-date(current-date(), '[D01]/[M01]/[Y0001]')"/>
-                    </xsl:variable>
-                    <subfield code="a">
-                        <xsl:value-of
-                                select="concat('Notice BnF dérivée via IdRef, le ', $dateJour2)"/>
-                    </subfield>
-                </datafield>
-                <!--ERM le 24/06/20 -->
-                <!--ancienne version des petits poissions qu'on ne laisse pas passer :
+                </xsl:variable>
+                <xsl:choose>
+                    <xsl:when
+                        test="@tag = '301' or @tag = '304' or @tag = '341' or @tag = '342' or @tag = '346' or @tag = '349' or @tag = '352' or @tag = '360' or @tag = '361'">
+                        <!--diffrentes sous-zones à concatener dans 300$a  ou  340$a-->
+                        <xsl:call-template name="z3XX">
+                            <xsl:with-param name="tagSource" select="$tagSource"/>
+                            <xsl:with-param name="tagDest" select="$tagDest"/>
+                            <xsl:with-param name="mode" select="'concat'"/>
+                        </xsl:call-template>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <!--seulement un ou plusieurs $a
+                            ALORS pour chaque sous-zone $a, on découpe (séparateur '. -') pour faire une zone  300$a   ou  340$a-->
+                        <xsl:for-each select="mxc:subfield[@code = 'a']">
+                            <xsl:for-each select="tokenize(text(), '. -')">
+                                <xsl:call-template name="z3XX">
+                                    <xsl:with-param name="tagSource" select="$tagSource"/>
+                                    <xsl:with-param name="tagDest" select="$tagDest"/>
+                                    <xsl:with-param name="mode" select="'tokenize'"/>
+                                    <xsl:with-param name="libelle">
+                                        <xsl:choose>
+                                            <xsl:when test="$tagSource = '302'">
+                                                <xsl:text>Nationalité : </xsl:text>
+                                            </xsl:when>
+                                            <xsl:when test="$tagSource = '303'">
+                                                <xsl:text>Adresse : </xsl:text>
+                                            </xsl:when>
+                                            <xsl:when test="$tagSource = '307'">
+                                                <xsl:text>Composition du groupe : </xsl:text>
+                                            </xsl:when>
+                                            <xsl:when test="$tagSource = '343'">
+                                                <xsl:text>Profession annexe : </xsl:text>
+                                            </xsl:when>
+                                            <xsl:when test="$tagSource = '344'">
+                                                <xsl:text>Gamme des produits et services de la marque : </xsl:text>
+                                            </xsl:when>
+                                            <xsl:when test="$tagSource = '345'">
+                                                <xsl:text>Interventions : </xsl:text>
+                                            </xsl:when>
+                                            <xsl:when test="$tagSource = '347'">
+                                                <xsl:text>Titulature : </xsl:text>
+                                            </xsl:when>
+                                            <xsl:when test="$tagSource = '350'">
+                                                <xsl:text>Activité liée à la production artistique : </xsl:text>
+                                            </xsl:when>
+                                            <xsl:when test="$tagSource = '351'">
+                                                <xsl:text>Technique : </xsl:text>
+                                            </xsl:when>
+                                            <xsl:when test="$tagSource = '353'">
+                                                <xsl:text>Influence : </xsl:text>
+                                            </xsl:when>
+                                            <xsl:when test="$tagSource = '354'">
+                                                <xsl:text>Devise(s) : </xsl:text>
+                                            </xsl:when>
+                                            <xsl:otherwise/>
+                                        </xsl:choose>
+                                    </xsl:with-param>
+                                </xsl:call-template>
+                            </xsl:for-each>
+                        </xsl:for-each>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
+            <xsl:for-each select="//mxc:datafield[@tag = '410']">
+                <xsl:call-template name="zX10">
+                    <xsl:with-param name="zone" select="@tag"/>
+                </xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="//mxc:datafield[@tag = '430'] | //mxc:datafield[@tag = '440']">
+                <xsl:call-template name="zXXX">
+                    <xsl:with-param name="zone" select="@tag"/>
+                </xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="//mxc:datafield[@tag = '510']">
+                <xsl:call-template name="zX10">
+                    <xsl:with-param name="zone" select="@tag"/>
+                </xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="//mxc:datafield[starts-with(@tag, '5') and (not(@tag = '510'))]">
+                <xsl:call-template name="zXXX">
+                    <xsl:with-param name="zone" select="@tag"/>
+                </xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="//mxc:datafield[@tag = '710']">
+                <xsl:call-template name="zX10">
+                    <xsl:with-param name="zone" select="@tag"/>
+                </xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="//mxc:datafield[@tag = '730'] | //mxc:datafield[@tag = '740']">
+                <xsl:call-template name="zXXX">
+                    <xsl:with-param name="zone" select="@tag"/>
+                </xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="//mxc:datafield[@tag = '810']/mxc:subfield[@code = 'a']">
+                <xsl:call-template name="z810"/>
+            </xsl:for-each>
+            <!--ERM sept 22 ajout du template z856 -->
+            <xsl:for-each select="//mxc:datafield[@tag = '856']">
+                <xsl:call-template name="z856"/>
+            </xsl:for-each>
+            <datafield ind1="#" ind2="#" tag="899">
+                <xsl:variable name="dateJour2">
+                    <xsl:value-of select="format-date(current-date(), '[D01]/[M01]/[Y0001]')"/>
+                </xsl:variable>
+                <subfield code="a">
+                    <xsl:value-of select="concat('Notice BnF dérivée via IdRef, le ', $dateJour2)"/>
+                </subfield>
+            </datafield>
+            <!--ERM le 24/06/20 -->
+            <!--ancienne version des petits poissons qu'on ne laisse pas passer :
                     or @tag = '300' or @tag = '301' or @tag = '302' or @tag = '303' or @tag = '304' or @tag = '307'
                     or  @tag = '340' or @tag = '341' or @tag = '342' or @tag = '343' or @tag = '344' or @tag = '345' or @tag = '346' or @tag = '347' or @tag = '349'
                     or @tag = '351' or @tag = '352' or @tag = '353' or @tag = '354'
                     or @tag = '360' or @tag = '361' -->
-                <xsl:apply-templates
-                        select="mxc:record/mxc:datafield[not(@tag = '010' or @tag = '039' or @tag = '100' or @tag = '101' or @tag = '103' or @tag = '105' or @tag = '106' or @tag = '123' or @tag = '128' or @tag = '150' or @tag = '152' or @tag = '154' or @tag = '160' or @tag = '210' or @tag = '230' or @tag = '240' or (starts-with(@tag, '30') and @tag != '305') or @tag = '330' or starts-with(@tag, '34') or (starts-with(@tag, '35') and @tag != '356') or starts-with(@tag, '36') or @tag = '410' or @tag = '430' or @tag = '440' or @tag = '500' or @tag = '510' or @tag = '515' or @tag = '520' or @tag = '530' or @tag = '540' or @tag = '550' or @tag = '580' or @tag = '652' or @tag = '710' or @tag = '730' or @tag = '740' or @tag = '810')] | @*"
-                />
-            </record>
+            <!--ERM sept 22 
+                   nouveaux petits poissons :
+                    * 856 
+                    * 822 sans $a mais on laisse passer mxc:record/mxc:datafield[@tag = '822'][(mxc:subfield[@code = 'a'])]
+                    cf : Message : La sous-zone $a est obligatoire en zone 822 avec un indicateur 2 égal à #, 2, 3, 4, 5 ou 6 Solution : en l'absence de $a, ne pas récupérer la zone 822.
+                    * 516
+                -->
+            <xsl:apply-templates
+                select="mxc:record/mxc:datafield[not(@tag = '010' or @tag = '039' or @tag = '100' or @tag = '101' or @tag = '103' or @tag = '105' or @tag = '106' or @tag = '123' or @tag = '128' or @tag = '150' or @tag = '152' or @tag = '154' or @tag = '160' or @tag = '210' or @tag = '230' or @tag = '240' or (starts-with(@tag, '30') and @tag != '305') or @tag = '330' or starts-with(@tag, '34') or (starts-with(@tag, '35') and @tag != '356') or starts-with(@tag, '36') or @tag = '410' or @tag = '430' or @tag = '440' or @tag = '500' or @tag = '510' or @tag = '515' or @tag = '516' or @tag = '520' or @tag = '530' or @tag = '540' or @tag = '550' or @tag = '580' or @tag = '652' or @tag = '710' or @tag = '730' or @tag = '740' or @tag = '810' or @tag = '822' or @tag = '856')] | mxc:record/mxc:datafield[@tag = '822'][(mxc:subfield[@code = 'a'])] | @*"
+            />
+        </record>
         </xsl:variable>
         <!--ERM le 24/06/20 -->
         <!-- arbre2 : variable qui contient la copie ordonnée des zones de arbre1-->
@@ -317,31 +329,31 @@
         </xsl:variable>
         <!--ERM le 24/06/20 -->
         <!-- permet d'écrire le résultat-->
-        <xsl:copy-of select="$arbre2"/>
+         <xsl:copy-of select="$arbre2"/>
     </xsl:template>
     <xsl:template name="zX10">
         <xsl:param name="zone"/>
         <xsl:variable name="ind1">
             <xsl:choose>
                 <xsl:when
-                        test="string-length(normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'a'])) = 1">
+                    test="string-length(normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'a'])) = 1">
                     <xsl:text>0</xsl:text>
                 </xsl:when>
                 <xsl:when
-                        test="string-length(normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'b'])) = 1">
+                    test="string-length(normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'b'])) = 1">
                     <xsl:choose>
                         <xsl:when
-                                test="normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'b']) = '0'">
+                            test="normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'b']) = '0'">
                             <xsl:text>0</xsl:text>
                         </xsl:when>
                         <xsl:when
-                                test="normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'b']) = '1'">
+                            test="normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'b']) = '1'">
                             <xsl:text>1</xsl:text>
                         </xsl:when>
                     </xsl:choose>
                 </xsl:when>
                 <xsl:when
-                        test="mxc:subfield[@code = 'd'] != '' or mxc:subfield[@code = 'e'] != '' or mxc:subfield[@code = 'f'] != ''">
+                    test="mxc:subfield[@code = 'd'] != '' or mxc:subfield[@code = 'e'] != '' or mxc:subfield[@code = 'f'] != ''">
                     <xsl:text>1</xsl:text>
                 </xsl:when>
                 <xsl:otherwise>
@@ -382,11 +394,42 @@
             </subfield>
         </datafield>
     </xsl:template>
-    <xsl:template name="typeAut">
+    <!--ERM sept 22 réécriture du template "typeAut"  qui type l'autorité en 008
+        pour traiter l'erreur :  La zone 200 n'est pas compatible avec le type de document Td 
+    il faut changer le type de notice sur la base de l'étiquette du point d'accès. 
+    Si leader009 = j + 200 alors A008 prend la valeur Tp5 
+    Si j+210 alors A008 prend la valeur Tb5 
+    Si j+215 alors A008 prend la valeur Tg5 
+    Si j+216 alors A008 prend la valeur Tm5 
+    Si j+220 alors A008 prend la valeur Ta5 
+    Si j+230 alors A008 prend la valeur Tu5 
+    Si j+240 alors A008 prend la valeur Tq5 
+    Si j+250 alors A008 prend la valeur Td5 
+    Si j+280 alors A008 prend la valeur Tf5     
+    -->  
+        <xsl:template name="typeAut">
         <xsl:param name="code"/>
-        <xsl:variable name="rolemap">;a=p;b=b;c=g;d=m;e=a;f=u;h=q;j=d;l=f;j=z</xsl:variable>
-        <xsl:value-of
-                select="substring-before(substring-after($rolemap, concat(';', $code, '=')), ';')"/>
+        <!--<xsl:variable name="rolemap">;a=p;b=b;c=g;d=m;e=a;f=u;h=q;j=d;l=f;j=z</xsl:variable>-->
+        <xsl:variable name="rolemap">;a=p;b=b;c=g;d=m;e=a;f=u;h=q;l=f</xsl:variable>
+        <xsl:variable name="z2XX"><xsl:value-of select="//mxc:datafield[substring(@tag, 1, 1)='2']/@tag"/></xsl:variable>
+            <xsl:choose>
+            <xsl:when test="$code='j'">
+                <xsl:choose>
+                    <xsl:when test="$z2XX='200'">p</xsl:when>
+                    <xsl:when test="$z2XX='210'">b</xsl:when>
+                    <xsl:when test="$z2XX='215'">g</xsl:when>
+                    <xsl:when test="$z2XX='216'">m</xsl:when>
+                    <xsl:when test="$z2XX='220'">a</xsl:when>
+                    <xsl:when test="$z2XX='230'">u</xsl:when>
+                    <xsl:when test="$z2XX='240'">q</xsl:when>
+                    <xsl:when test="$z2XX='250'">d</xsl:when>
+                    <xsl:when test="$z2XX='280'">f</xsl:when>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise> 
+                <xsl:value-of
+            select="substring-before(substring-after($rolemap, concat(';', $code, '=')), ';')"/></xsl:otherwise>
+        </xsl:choose>        
     </xsl:template>
     <xsl:template name="z103">
         <xsl:if test="//mxc:datafield[@tag = '103']">
@@ -401,7 +444,7 @@
             </xsl:variable>
             <xsl:variable name="z103_aDebutDate">
                 <xsl:analyze-string regex="[?Xx.]*[0-9]{{2,8}}[?Xx.]*"
-                                    select="substring($z103a, 2, 8)">
+                    select="substring($z103a, 2, 8)">
                     <xsl:matching-substring>
                         <xsl:value-of select="substring($z103a, 2, 8)"/>
                     </xsl:matching-substring>
@@ -413,7 +456,7 @@
             </xsl:variable>
             <xsl:variable name="z103_aFinDate">
                 <xsl:analyze-string regex="[?Xx.]*[0-9]{{2,8}}[?Xx.]*"
-                                    select="substring($z103a, 12, 8)">
+                    select="substring($z103a, 12, 8)">
                     <xsl:matching-substring>
                         <xsl:value-of select="substring($z103a, 12, 8)"/>
                     </xsl:matching-substring>
@@ -425,7 +468,7 @@
             </xsl:variable>
             <xsl:variable name="z103_bDebutDate">
                 <xsl:analyze-string regex="[?Xx.]*[0-9]{{2,8}}[?Xx.]*"
-                                    select="substring($z103b, 2, 4)">
+                    select="substring($z103b, 2, 4)">
                     <xsl:matching-substring>
                         <xsl:value-of select="substring($z103b, 2, 4)"/>
                     </xsl:matching-substring>
@@ -437,7 +480,7 @@
             </xsl:variable>
             <xsl:variable name="z103_bFinDate">
                 <xsl:analyze-string regex="[?Xx.]*[0-9]{{2,8}}[?Xx.]*"
-                                    select="substring($z103b, 8, 4)">
+                    select="substring($z103b, 8, 4)">
                     <xsl:matching-substring>
                         <xsl:value-of select="substring($z103b, 8, 4)"/>
                     </xsl:matching-substring>
@@ -453,7 +496,7 @@
            $z103_bFinDate  : <xsl:value-of select="$z103_bFinDate"/>
        </xsl:comment>-->
             <xsl:if
-                    test="$z103_aDebutDate != '' or $z103_aFinDate != '' or $z103_bDebutDate != '' or $z103_bFinDate != ''">
+                test="$z103_aDebutDate != '' or $z103_aFinDate != '' or $z103_bDebutDate != '' or $z103_bFinDate != ''">
                 <datafield ind1="#" ind2="#" tag="103">
                     <!-- ERM  pour chaque sous zone ne pas laisser passer si contient espace -->
                     <xsl:analyze-string regex="[?Xx.]*[0-9]{{2,8}}[?Xx.]*" select="$z103_aDebutDate">
@@ -490,7 +533,7 @@
     </xsl:template>
     <xsl:template name="z128">
         <xsl:variable name="z128a"
-                      select="normalize-space(//mxc:datafield[@tag = '128']/mxc:subfield[@code = 'a'])"/>
+            select="normalize-space(//mxc:datafield[@tag = '128']/mxc:subfield[@code = 'a'])"/>
         <xsl:variable name="z128b" select="//mxc:datafield[@tag = '128']/mxc:subfield[@code = 'b']"/>
         <xsl:variable name="z128c" select="//mxc:datafield[@tag = '128']/mxc:subfield[@code = 'c']"/>
         <xsl:if test="string-length($z128a) = 2">
@@ -517,9 +560,9 @@
     </xsl:template>
     <xsl:template name="z150">
         <xsl:variable name="z150a"
-                      select="normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'a'])"/>
+            select="normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'a'])"/>
         <xsl:variable name="z150b"
-                      select="normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'b'])"/>
+            select="normalize-space(//mxc:datafield[@tag = '150']/mxc:subfield[@code = 'b'])"/>
         <xsl:if test="string-length($z150a) = 1 or string-length($z150b) = 1">
             <xsl:variable name="valeur150a" select="'abcdefghuyz'"/>
             <xsl:variable name="valeur150b" select="'01'"/>
@@ -541,14 +584,14 @@
         <xsl:param name="leader09_008"/>
         <datafield ind1="#" ind2="#" tag="106">
             <xsl:variable name="z200szx"
-                          select="normalize-space(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'x'])"/>
+                select="normalize-space(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'x'])"/>
             <xsl:variable name="z200szy"
-                          select="normalize-space(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'y'])"/>
+                select="normalize-space(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'y'])"/>
             <xsl:variable name="z200szz"
-                          select="normalize-space(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'z'])"/>
+                select="normalize-space(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'z'])"/>
             <xsl:choose>
                 <xsl:when
-                        test="(substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 1, 1) != '') and $leader09_008 = 'p' and ((not(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'x']) or //mxc:datafield[@tag = '200']/mxc:subfield[@code = 'x'] = '') and (not(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'y']) or //mxc:datafield[@tag = '200']/mxc:subfield[@code = 'y'] = '') and (not(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'z']) or //mxc:datafield[@tag = '200']/mxc:subfield[@code = 'z'] = ''))">
+                    test="(substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 1, 1) != '') and $leader09_008 = 'p' and ((not(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'x']) or //mxc:datafield[@tag = '200']/mxc:subfield[@code = 'x'] = '') and (not(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'y']) or //mxc:datafield[@tag = '200']/mxc:subfield[@code = 'y'] = '') and (not(//mxc:datafield[@tag = '200']/mxc:subfield[@code = 'z']) or //mxc:datafield[@tag = '200']/mxc:subfield[@code = 'z'] = ''))">
                     <subfield code="a">0</subfield>
                     <subfield code="b">1</subfield>
                     <subfield code="c">0</subfield>
@@ -557,9 +600,9 @@
                     <subfield code="a">
                         <xsl:choose>
                             <xsl:when
-                                    test="substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 1, 1) != ''">
+                                test="substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 1, 1) != ''">
                                 <xsl:value-of
-                                        select="(substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 1, 1))"
+                                    select="(substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 1, 1))"
                                 />
                             </xsl:when>
                             <xsl:otherwise>#</xsl:otherwise>
@@ -568,9 +611,9 @@
                     <subfield code="b">
                         <xsl:choose>
                             <xsl:when
-                                    test="substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 2, 1) != ''">
+                                test="substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 2, 1) != ''">
                                 <xsl:value-of
-                                        select="substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 2, 1)"
+                                    select="substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 2, 1)"
                                 />
                             </xsl:when>
                             <xsl:otherwise>#</xsl:otherwise>
@@ -579,9 +622,9 @@
                     <subfield code="c">
                         <xsl:choose>
                             <xsl:when
-                                    test="substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 3, 1) != ''">
+                                test="substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 3, 1) != ''">
                                 <xsl:value-of
-                                        select="substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 3, 1)"
+                                    select="substring(normalize-space(//mxc:datafield[@tag = '106']/mxc:subfield[@code = 'a']), 3, 1)"
                                 />
                             </xsl:when>
                             <xsl:otherwise>#</xsl:otherwise>
@@ -868,11 +911,16 @@
     </xsl:template>
     <xsl:template name="zX10_zXXX">
         <xsl:param name="zone"/>
+             <!--ERM sept 22 
+            ajout du filtre pour ne conserver que la 1ère occurence de la sous-zone $5 => not(.[@code = '5']/preceding-sibling::mxc:subfield[@code = '5'])
+            pour traiter l'erreur : Sous-zone '$5g' inconnue, mal placée ou non répétable en 510 solution : la $5 n'est pas une sous-zone répétable donc on ne prend que la première-->
         <xsl:for-each select="mxc:subfield[(string(@code) &lt; 'a') and (@code != '3')]">
-            <xsl:sort order="ascending" select="number(@code)"/>
-            <xsl:choose>
+            <xsl:sort order="ascending" select="number(@code)"> </xsl:sort>
+                    <xsl:choose>
                 <xsl:when test="starts-with($zone, '5')">
-                    <xsl:apply-templates select=".[not(@code = '9')]"/>
+                    <xsl:apply-templates
+                        select=".[not(@code = '9') and not(.[@code = '5']/preceding-sibling::mxc:subfield[@code = '5'])]"
+                    />
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:apply-templates select="."/>
@@ -893,18 +941,18 @@
                             <subfield code="a">
                                 <xsl:value-of select="normalize-space(text())"/>
                                 <xsl:if
-                                        test="./parent::mxc:datafield/mxc:subfield[@code = 'b'] != ''">
+                                    test="./parent::mxc:datafield/mxc:subfield[@code = 'b'] != ''">
                                     <xsl:value-of
-                                            select="concat(', ', ./parent::mxc:datafield/mxc:subfield[@code = 'b'])"
+                                        select="concat(', ', ./parent::mxc:datafield/mxc:subfield[@code = 'b'])"
                                     />
                                 </xsl:if>
                                 <xsl:variable name="ssz240a" select="'c, d, e, f'"/>
                                 <xsl:if
-                                        test="./parent::mxc:datafield/mxc:subfield[contains($ssz240a, @code)][text() != '']">
+                                    test="./parent::mxc:datafield/mxc:subfield[contains($ssz240a, @code)][text() != '']">
                                     <xsl:text> (</xsl:text>
                                 </xsl:if>
                                 <xsl:for-each
-                                        select="./parent::mxc:datafield/mxc:subfield[contains($ssz240a, @code)][text() != '']">
+                                    select="./parent::mxc:datafield/mxc:subfield[contains($ssz240a, @code)][text() != '']">
                                     <xsl:choose>
                                         <xsl:when test="position() != 1">
                                             <xsl:text>, </xsl:text>
@@ -914,21 +962,21 @@
                                     <xsl:value-of select="."/>
                                 </xsl:for-each>
                                 <xsl:if
-                                        test="./parent::mxc:datafield/mxc:subfield[contains($ssz240a, @code)][text() != '']">
+                                    test="./parent::mxc:datafield/mxc:subfield[contains($ssz240a, @code)][text() != '']">
                                     <xsl:text>)</xsl:text>
                                 </xsl:if>
                             </subfield>
                         </xsl:when>
                         <xsl:when test=".[@code = 't'] != ''">
                             <xsl:variable name="zoneATrier"
-                                          select="translate(.[@code = 't'], '[]', '')"/>
+                                select="translate(.[@code = 't'], '[]', '')"/>
                             <subfield code="t">
                                 <xsl:call-template name="nonTri">
                                     <xsl:with-param name="in_ZoneATrier" select="$zoneATrier"/>
                                 </xsl:call-template>
                                 <xsl:variable name="ssz240t" select="'h, i, n, k, l m, q, r, s, u'"/>
                                 <xsl:for-each
-                                        select="./parent::mxc:datafield/mxc:subfield[contains($ssz240t, @code)][text() != '']">
+                                    select="./parent::mxc:datafield/mxc:subfield[contains($ssz240t, @code)][text() != '']">
                                     <xsl:text>. </xsl:text>
                                     <xsl:value-of select="."/>
                                 </xsl:for-each>
@@ -936,12 +984,12 @@
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:apply-templates
-                                    select=".[@code = 'x' or @code = 'y' or @code = 'z']"/>
+                                select=".[@code = 'x' or @code = 'y' or @code = 'z']"/>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:when>
                 <xsl:when
-                        test="(ends-with($zone, '10') or ends-with($zone, '30')) and .[@code = 'a'] != ''">
+                    test="(ends-with($zone, '10') or ends-with($zone, '30')) and .[@code = 'a'] != ''">
                     <subfield code="a">
                         <xsl:call-template name="nonTri">
                             <xsl:with-param name="in_ZoneATrier" select="normalize-space(text())"/>
@@ -960,6 +1008,36 @@
                 <xsl:value-of select="."/>
             </subfield>
         </datafield>
+    </xsl:template>
+    <!--ERM sept 22 ajout du template z856 pour traiter l'erreur : La sous-zone '$e' n'est pas répétable en 856 le problème implique aussi la $u. 
+        solution : créer une nouvelle zone 856 pour chaque couple $u / $e-->
+    <xsl:template name="z856">
+        <xsl:choose>
+            <xsl:when test="mxc:subfield[@code = 'u'][2]">
+                <xsl:for-each select="mxc:subfield[@code = 'u']">
+                    <datafield ind1="#" ind2="#" tag="856">
+                        <subfield code="u">
+                            <xsl:value-of select="."/>
+                        </subfield>
+                        <xsl:if test="following::mxc:subfield[@code = 'e'][1]">
+                            <subfield code="e">
+                                <xsl:value-of select="following::mxc:subfield[@code = 'e'][1]"/>
+                            </subfield>
+                        </xsl:if>
+                    </datafield>
+                </xsl:for-each>
+            </xsl:when>
+            <xsl:otherwise>
+                <datafield ind1="#" ind2="#" tag="856">
+                    <subfield code="u">
+                        <xsl:value-of select="mxc:subfield[@code = 'u']"/>
+                    </subfield>
+                    <subfield code="e">
+                        <xsl:value-of select="mxc:subfield[@code = 'e']"/>
+                    </subfield>
+                </datafield>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     <xsl:template match="mxc:subfield[@code = '5']">
         <xsl:variable name="zoneTableau">200;400;500;510;516;520;700</xsl:variable>
@@ -1071,7 +1149,7 @@
         </xsl:comment>-->
         <xsl:choose>
             <xsl:when
-                    test="($zone = '200' and ($sz5 = 'e' or $sz5 = 'f' or $sz5 = 'i' or $sz5 = 'j' or $sz5 = 'k' or $sz5 = 'l')) or ($zone = '400' and ($sz5 = 'e' or $sz5 = 'f' or $sz5 = 'i' or $sz5 = 'j' or $sz5 = 'k' or $sz5 = 'l')) or ($zone = '500' and ($sz5 = 'xxc' or $sz5 = 'xxd' or $sz5 = 'e' or $sz5 = 'xxe' or $sz5 = 'f' or $sz5 = 'xxg' or $sz5 = 'xxh' or $sz5 = 'i' or $sz5 = 'j' or $sz5 = 'xxj' or $sz5 = 'k' or $sz5 = 'l' or $sz5 = 'xxl' or $sz5 = 'n' or $sz5 = 'xxt')) or ($zone = '510' and ($sz5 = 'xxk' or $sz5 = 'xxl' or $sz5 = 'xxm' or $sz5 = 'xxn' or $sz5 = 'xxp' or $sz5 = 'xxq' or $sz5 = 'r' or $sz5 = 's' or $sz5 = 'xxs' or $sz5 = 'xxt')) or ($zone = '516' and ($sz5 = 'xxm' or $sz5 = 'xxs')) or ($zone = '520' and ($sz5 = 'xxm' or $sz5 = 'xxn' or $sz5 = 'xxt')) or ($zone = '4XX' and ($sz5 = 'a' or $sz5 = 'b' or $sz5 = 'u' or $sz5 = 'z')) or ($zone = '5XX' and ($sz5 = 'a' or $sz5 = 'b' or $sz5 = 'g' or $sz5 = 'h' or $sz5 = 'u' or $sz5 = 'z'))">
+                test="($zone = '200' and ($sz5 = 'e' or $sz5 = 'f' or $sz5 = 'i' or $sz5 = 'j' or $sz5 = 'k' or $sz5 = 'l')) or ($zone = '400' and ($sz5 = 'e' or $sz5 = 'f' or $sz5 = 'i' or $sz5 = 'j' or $sz5 = 'k' or $sz5 = 'l')) or ($zone = '500' and ($sz5 = 'xxc' or $sz5 = 'xxd' or $sz5 = 'e' or $sz5 = 'xxe' or $sz5 = 'f' or $sz5 = 'xxg' or $sz5 = 'xxh' or $sz5 = 'i' or $sz5 = 'j' or $sz5 = 'xxj' or $sz5 = 'k' or $sz5 = 'l' or $sz5 = 'xxl' or $sz5 = 'n' or $sz5 = 'xxt')) or ($zone = '510' and ($sz5 = 'xxk' or $sz5 = 'xxl' or $sz5 = 'xxm' or $sz5 = 'xxn' or $sz5 = 'xxp' or $sz5 = 'xxq' or $sz5 = 'r' or $sz5 = 's' or $sz5 = 'xxs' or $sz5 = 'xxt')) or ($zone = '516' and ($sz5 = 'xxm' or $sz5 = 'xxs')) or ($zone = '520' and ($sz5 = 'xxm' or $sz5 = 'xxn' or $sz5 = 'xxt')) or ($zone = '4XX' and ($sz5 = 'a' or $sz5 = 'b' or $sz5 = 'u' or $sz5 = 'z')) or ($zone = '5XX' and ($sz5 = 'a' or $sz5 = 'b' or $sz5 = 'g' or $sz5 = 'h' or $sz5 = 'u' or $sz5 = 'z'))">
                 <subfield code="5">
                     <xsl:value-of select="$sz5"/>
                 </subfield>
@@ -1085,7 +1163,7 @@
                         <xsl:call-template name="tableau">
                             <xsl:with-param name="zone" select="$zone"/>
                             <xsl:with-param name="sz5" select="concat('xx', $sz5)"/>
-                            <xsl:with-param name="sz5Initial" select="$sz5Initial"></xsl:with-param>
+                            <xsl:with-param name="sz5Initial" select="$sz5Initial"/>
                             <xsl:with-param name="nbCaraInitial" select="$nbCaraInitial"/>
                             <xsl:with-param name="fin" select="'oui'"/>
                             <xsl:with-param name="generique" select="$generique"/>
@@ -1098,7 +1176,7 @@
                         <xsl:call-template name="tableau">
                             <xsl:with-param name="zone" select="$zone"/>
                             <xsl:with-param name="sz5" select="replace($sz5, 'x', '')"/>
-                            <xsl:with-param name="sz5Initial" select="$sz5Initial"></xsl:with-param>
+                            <xsl:with-param name="sz5Initial" select="$sz5Initial"/>
                             <xsl:with-param name="nbCaraInitial" select="$nbCaraInitial"/>
                             <xsl:with-param name="fin" select="'oui'"/>
                             <xsl:with-param name="generique" select="$generique"/>
@@ -1110,14 +1188,19 @@
                         </xsl:comment>-->
                         <xsl:call-template name="tableau">
                             <xsl:with-param name="zone"
-                                            select="concat(substring($zone, 1, 1), 'XX')"/>
+                                select="concat(substring($zone, 1, 1), 'XX')"/>
                             <xsl:with-param name="sz5">
                                 <xsl:choose>
-                                    <xsl:when test="$nbCaraInitial = 1"><xsl:value-of select="$sz5Initial"/></xsl:when>
-                                    <xsl:otherwise><xsl:value-of select="concat('xx',replace($sz5, 'x', ''))"></xsl:value-of></xsl:otherwise>
+                                    <xsl:when test="$nbCaraInitial = 1">
+                                        <xsl:value-of select="$sz5Initial"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="concat('xx', replace($sz5, 'x', ''))"
+                                        />
+                                    </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:with-param>
-                            <xsl:with-param name="sz5Initial" select="$sz5Initial"></xsl:with-param>
+                            <xsl:with-param name="sz5Initial" select="$sz5Initial"/>
                             <xsl:with-param name="nbCaraInitial" select="$nbCaraInitial"/>
                             <xsl:with-param name="fin" select="'non'"/>
                         </xsl:call-template>
@@ -1136,11 +1219,11 @@
                     <xsl:value-of select="substring(., 1, 2)"/>
                 </subfield>
             </xsl:otherwise>
-        </xsl:choose>-->
-    </xsl:template>
+        </xsl:choose>--> </xsl:template>
     <xsl:template match="mxc:subfield[@code = '8']">
         <xsl:choose>
-            <xsl:when test="./parent::mxc:datafield[starts-with(@tag, '5')] or text() = 'frefre' or text() = 'fre   ' or text() = 'fre ' or contains(.,'|||')"/>
+            <xsl:when
+                test="./parent::mxc:datafield[starts-with(@tag, '5')] or text() = 'frefre' or text() = 'fre   ' or text() = 'fre ' or contains(., '|||')"/>
             <xsl:otherwise>
                 <subfield code="8">
                     <xsl:value-of select="."/>
@@ -1163,7 +1246,7 @@
                     </xsl:choose>
                 </xsl:variable>
                 <xsl:variable name="sz9pos2"
-                              select="substring(preceding-sibling::mxc:subfield[@code = '7'], 8, 1)"/>
+                    select="substring(preceding-sibling::mxc:subfield[@code = '7'], 8, 1)"/>
                 <xsl:variable name="sz9">
                     <xsl:value-of select="concat($sz9pos1, $sz9pos2)"/>
                 </xsl:variable>
@@ -1206,7 +1289,7 @@
                 <xsl:when test="contains($SepareParEspace, &quot;'&quot;)">
                     <!-- je réattache l'apostrophe -->
                     <xsl:value-of
-                            select="concat(substring-before($SepareParEspace, &quot;'&quot;), &quot;'&quot;)"
+                        select="concat(substring-before($SepareParEspace, &quot;'&quot;), &quot;'&quot;)"
                     />
                 </xsl:when>
                 <xsl:otherwise>
@@ -1221,17 +1304,17 @@
                 <!-- <xsl:text> </xsl:text> -->
                 <xsl:choose>
                     <xsl:when
-                            test="substring(substring-after($in_ZoneATrier, $SepareParEspaceEtApostrophe), 1, 1) = ' '">
+                        test="substring(substring-after($in_ZoneATrier, $SepareParEspaceEtApostrophe), 1, 1) = ' '">
                         <xsl:text> </xsl:text>
                         <xsl:text>@</xsl:text>
                         <xsl:value-of
-                                select="substring-after(substring-after($in_ZoneATrier, $SepareParEspaceEtApostrophe), ' ')"
+                            select="substring-after(substring-after($in_ZoneATrier, $SepareParEspaceEtApostrophe), ' ')"
                         />
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>@</xsl:text>
                         <xsl:value-of
-                                select="substring-after($in_ZoneATrier, $SepareParEspaceEtApostrophe)"/>
+                            select="substring-after($in_ZoneATrier, $SepareParEspaceEtApostrophe)"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
@@ -1289,7 +1372,6 @@
             <xsl:apply-templates select="node() | @*"/>
         </xsl:copy>
     </xsl:template>
-
     <!-\\- Copie de l'élément sans xmlns = local-name() -\\->
     <xsl:template match="*">
         <xsl:element name="{local-name()}">
