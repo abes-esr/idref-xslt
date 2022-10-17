@@ -22,8 +22,8 @@
             
             
             
-            <xsl:for-each select="//mx:datafield[@tag = '910']">
-                <xsl:call-template name="z910"/>
+            <xsl:for-each select="//mx:datafield[@tag = '670']">
+                <xsl:call-template name="z670"/>
             </xsl:for-each>
             
             
@@ -60,10 +60,10 @@
         </datafield>
     </xsl:template>
     
-    <xsl:template name="z910">
+    <xsl:template name="z610">
         <datafield ind1="#" ind2="#" tag="810">
             <subfield code="a">
-                <xsl:value-of select="mx:subfield[@code = 'A']"/>
+                <xsl:value-of select="mx:subfield[@code = 'a']"/>
             </subfield>
         </datafield>
     </xsl:template>
