@@ -423,12 +423,12 @@
 						</xsl:for-each>
 						
 						<datafield ind1="#" ind2="#" tag="899">
-							<xsl:variable name="dateJour">
+							<xsl:variable name="dateJour2">
 								<xsl:value-of select="format-date(current-date(), '[D01]/[M01]/[Y0001]')"/>
 							</xsl:variable>
 							<subfield code="a">
 								<xsl:value-of
-									select="concat('Notice issue de VIAF dérivée via IdRef, le ', $dateJour)"/>
+									select="concat('Notice issue de VIAF dérivée via IdRef, le ', $dateJour2)"/>
 							</subfield>
 						</datafield>
 
