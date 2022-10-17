@@ -54,9 +54,6 @@
             <subfield code="a">
                 <xsl:value-of select="mx:subfield[@code = 'a']"/>
             </subfield>
-            <subfield code="b">
-                <xsl:value-of select="mx:subfield[@code = 'q']"/>
-            </subfield>
             <subfield code="f">
                 <xsl:value-of select="mx:subfield[@code = 'd']"/>
             </subfield>
