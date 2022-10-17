@@ -12,7 +12,7 @@
 	<xsl:template match="/">
 				<xsl:for-each select="marc:record">
 					<record type="Authority" format="UNIMARC">
-						<xsl:for-each select="marc:leader">
+<!--						<xsl:for-each select="marc:leader">
 							<leader>
 								<xsl:variable name="recordLenght">00000</xsl:variable>
 								<xsl:variable name="recordStatus">
@@ -20,7 +20,7 @@
 										<xsl:when test="substring(text(), 6, 1) = 'a'">c</xsl:when>
 										<xsl:when test="substring(text(), 6, 1) = 's'">d</xsl:when>
 										<xsl:when test="substring(text(), 6, 1) = 'x'">d</xsl:when>
-										<!-- problem: obsolete record conversion -->
+										<!-\- problem: obsolete record conversion -\->
 										<xsl:when test="substring(text(), 6, 1) = 'o'">d</xsl:when>
 										<xsl:otherwise>
 											<xsl:value-of select="substring(text(), 6, 1)"/>
@@ -30,7 +30,7 @@
 								<xsl:variable name="recordType">
 									<xsl:value-of select="substring(text(), 7, 1)"/>
 								</xsl:variable>
-								<!-- Fixme: add Type of Entity -->
+								<!-\- Fixme: add Type of Entity -\->
 								<xsl:variable name="entityType">
 									<xsl:value-of select="' '"/>
 								</xsl:variable>
@@ -44,11 +44,11 @@
 										</xsl:otherwise>
 									</xsl:choose>
 								</xsl:variable>
-								<!-- use 18 Punctuation policy? -->
+								<!-\- use 18 Punctuation policy? -\->
 								<xsl:value-of
 									select="concat($recordLenght, $recordStatus, $recordType, '  ', $entityType, '22', $baseAddressOfData, $encodingLevel, '  45  ')"/>
 							</leader>
-						</xsl:for-each>
+						</xsl:for-each>-->
 						<!--  <xsl:for-each select="marc:controlfield[@tag = '001']">
 							<controlfield tag="001">
 								<xsl:value-of select="text()"/>
