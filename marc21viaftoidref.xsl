@@ -249,6 +249,8 @@
 								</subfield>
 								<!-\- fixme complete conversion -\->
 							</datafield>-->
+				<xsl:variable name="z120_sza" select="substring(text(), 33, 1)"/>
+				<xsl:if test="$z120_sza='a' or $z120_sza='b'">
 				<datafield tag="120" ind1="#" ind2="#">
 					<subfield code="a">
 						<xsl:choose>
@@ -257,6 +259,8 @@
 						</xsl:choose>
 					</subfield>
 				</datafield>
+				</xsl:if>
+				
 				<!--<datafield tag="150" ind1=" " ind2=" ">
 								<subfield code="a">
 									<xsl:value-of select="translate (substring(text(), 29, 1), ' acfilmosuz',  'ybeafdehcuz')"/>
@@ -348,6 +352,8 @@
 
 			<!--	Ajout FML-->
 			<xsl:for-each select="mx:datafield[@tag = '377']">
+				<xsl:variable name="sz_a" select="mx:subfield[@code = 'a']"/>
+				<xsl:if test="$sz_a != ''">
 				<datafield tag="101" ind1="#" ind2="#">
 					<xsl:for-each select="mx:subfield[@code = 'a']">
 						<subfield code="a">
@@ -355,17 +361,21 @@
 						</subfield>
 					</xsl:for-each>
 				</datafield>
+				</xsl:if>
 			</xsl:for-each>
 
 			<!--	Ajout FML-->
 			<xsl:for-each select="mx:datafield[@tag = '043']">
-				<datafield tag="102" ind1="#" ind2="#">
-					<xsl:for-each select="mx:subfield[@code = 'c']">
-						<subfield code="a">
-							<xsl:value-of select="text()"/>
-						</subfield>
-					</xsl:for-each>
-				</datafield>
+				<xsl:variable name="z102sz_c" select="mx:subfield[@code = 'c']"/>
+				<xsl:if test="$z102sz_c != '' and $z102sz_c!='XA' and string-length(normalize-space($z102sz_c))!=3">
+					<datafield tag="102" ind1="#" ind2="#">
+						<xsl:for-each select="tokenize($z102sz_c, '-')">
+							<xsl:if test=".!='XA' and string-length(.)=2">	<subfield code="a">
+								<xsl:value-of select="normalize-space(.)"/>
+							</subfield></xsl:if>
+						</xsl:for-each>
+					</datafield>
+				</xsl:if>
 			</xsl:for-each>
 
 
@@ -463,6 +473,7 @@
 								</datafield>
 							</xsl:for-each>
 						</xsl:for-each> -->
+		
 			<xsl:for-each select="mx:datafield[@tag = '670']">
 				<datafield tag="810" ind1="#" ind2="#">
 					<xsl:for-each select="mx:subfield[@code = 'a']">
@@ -633,6 +644,7 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
+	
 	<xsl:template name="z200_vie_mort">
 		<xsl:variable name="AnneeVie">
 			<xsl:value-of
@@ -643,10 +655,23 @@
 				select="substring(//mx:datafield[@tag = '046']/mx:subfield[@code = 'g'], 1, 4)"/>
 		</xsl:variable>
 
+	<xsl:if test="$AnneeVie!='' or $AnneeMort!='' ">
 		<subfield code="f">
-			<xsl:value-of select="concat($AnneeVie, '-', $AnneeMort)"/>
+			<xsl:choose>
+				<xsl:when test="$AnneeVie!=''"><xsl:value-of select="concat($AnneeVie,'-')"/></xsl:when>
+				<xsl:otherwise>....-</xsl:otherwise> 
+			</xsl:choose>
+			<xsl:choose>
+				<xsl:when test="$AnneeMort!=''"><xsl:value-of select="$AnneeMort"/></xsl:when>
+				<xsl:otherwise>....</xsl:otherwise> 
+			</xsl:choose>
 		</subfield>
+	</xsl:if>
+	
+	
+	
 	</xsl:template>
+	
 	<xsl:template name="removeEndPuctuation">
 		<xsl:param name="text"/>
 		<xsl:choose>
