@@ -3,13 +3,15 @@
     Objectifs : rendre conforme au marcXml Sudoc :
     v 20220920
   -->
-<xsl:stylesheet exclude-result-prefixes="srw mx xsi xs" version="2.0"
-    xmlns:mx="info:lc/xmlns/marcxchange-v2" xmlns:srw="http://www.loc.gov/zing/srw/"
+<xsl:stylesheet exclude-result-prefixes="srw mx mxc xsi xs" version="2.0"
+    xmlns:mxc="info:lc/xmlns/marcxchange-v2" xmlns:srw="http://www.loc.gov/zing/srw/"
+    xmlns="http://www.w3.org/TR/xhtml1/strict" xmlns:mx="http://www.loc.gov/MARC21/slim"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output encoding="UTF-8" indent="yes" method="xml"/>
     <xsl:param name="token"/>
+    <xsl:param name="idviaf"/>
     <xsl:strip-space elements="*"/>
     <xsl:variable name="dateJour">
         <xsl:value-of select="format-date(current-date(), '[Y0001][M01][D01]')"/>
@@ -41,7 +43,7 @@
                         <srw:recordPacking>xml</srw:recordPacking>
                         <srw:recordSchema>info:srw/schema/1/marcxml-v1.1</srw:recordSchema>
                         <srw:recordData>
-                            <xsl:apply-templates select="//srw:recordData"/>
+                            <xsl:apply-templates select="mx:record"/>
                         </srw:recordData>
                     </srw:record>
                 </ucp:updateRequest>
@@ -53,7 +55,7 @@
             </soap:Body>
         </soap:Envelope>
     </xsl:template>
-    <xsl:template match="srw:recordData">
+    <xsl:template match="mx:record">
         <!--ERM le 24/06/20 -->
         <!--arbre1 : variable qui contient les zones non ordonnées-->
          <xsl:variable name="arbre1">
@@ -61,19 +63,21 @@
             <!--ERM le 24/06/20 -->
             <!--devenu inutile -->
             <xsl:variable name="leaderDeb">
-                <xsl:value-of select="substring(mx:record/mx:leader, 1, 17)"/>
+                <xsl:value-of select="substring(mx:leader, 1, 17)"/>
             </xsl:variable>
             <xsl:variable name="leaderFin">
-                <xsl:value-of select="substring(mx:record/mx:leader, 19)"/>
+                <xsl:value-of select="substring(mx:leader, 19)"/>
             </xsl:variable>
             <!--   <xsl:choose>
                     <xsl:when
-                        test="mx:record/mx:datafield[substring(@tag, 1, 1) = '7'][mx:subfield[@code = '3'][normalize-space(text()) != '']]">
+                        test="mx:datafield[substring(@tag, 1, 1) = '7'][mx:subfield[@code = '3'][normalize-space(text()) != '']]">
                         <xsl:element name="leader">
                             <xsl:value-of select="concat($leaderDeb, '#', $leaderFin)"/>
                         </xsl:element>
                     </xsl:when>
                 </xsl:choose>-->
+
+            
             <xsl:variable name="leader09_008">
                 <xsl:call-template name="typeAut">
                     <xsl:with-param name="code" select="substring($leaderDeb, 10, 1)"/>
@@ -105,10 +109,10 @@
                     </xsl:for-each>
                 </datafield>
             </xsl:for-each>
-            <xsl:call-template name="z033"/>
+         <xsl:call-template name="z033"/>
             <xsl:call-template name="z035"/>
             <xsl:apply-templates
-                select="mx:record/mx:controlfield[not(@tag = '001' or @tag = '003' or @tag = '005')]"/>
+                select="mx:controlfield[not(@tag = '001' or @tag = '003' or @tag = '005' or @tag= '009')]"/>
             <xsl:variable name="test101">
                 <xsl:for-each select="//mx:datafield[@tag = '101']/mx:subfield[@code = 'a']">
                     <xsl:if test="string-length(normalize-space(.)) = 3">OK</xsl:if>
@@ -125,6 +129,23 @@
                     </xsl:for-each>
                 </datafield>
             </xsl:if>
+            
+            <!--Ajout FML : l'idviaf venant du JAVA -->	
+            <datafield ind1="#" ind2="#" tag="035">							
+                <subfield code="a">
+                    <xsl:value-of select="$idviaf"/>
+                </subfield>
+                <subfield code="2">
+                    <xsl:text>VIAF</xsl:text>
+                </subfield>
+                <subfield code="C">
+                    <xsl:text>VIAF</xsl:text>
+                </subfield>
+                <subfield code="d">
+                    <xsl:value-of select="$dateJour"/>
+                </subfield>
+            </datafield>
+            
             <!--ERM le 24/06/20 -->
             <!--devenu inutile avec le tri pos-traitement
              <xsl:apply-templates select="//mx:datafield[@tag = '102']"/>-->
@@ -310,12 +331,15 @@
             <!--ERM sept 22 
                    nouveaux petits poissons :
                     * 856 
-                    * 822 sans $a mais on laisse passer mx:record/mx:datafield[@tag = '822'][(mx:subfield[@code = 'a'])]
+                    * 822 sans $a mais on laisse passer mx:datafield[@tag = '822'][(mx:subfield[@code = 'a'])]
                     cf : Message : La sous-zone $a est obligatoire en zone 822 avec un indicateur 2 égal à #, 2, 3, 4, 5 ou 6 Solution : en l'absence de $a, ne pas récupérer la zone 822.
                     * 516
                 -->
             <xsl:apply-templates
-                select="mx:record/mx:datafield[not(@tag = '010' or @tag = '039' or @tag = '100' or @tag = '101' or @tag = '103' or @tag = '105' or @tag = '106' or @tag = '123' or @tag = '128' or @tag = '150' or @tag = '152' or @tag = '154' or @tag = '160' or @tag = '210' or @tag = '230' or @tag = '240' or (starts-with(@tag, '30') and @tag != '305') or @tag = '330' or starts-with(@tag, '34') or (starts-with(@tag, '35') and @tag != '356') or starts-with(@tag, '36') or @tag = '410' or @tag = '430' or @tag = '440' or @tag = '500' or @tag = '510' or @tag = '515' or @tag = '516' or @tag = '520' or @tag = '530' or @tag = '540' or @tag = '550' or @tag = '580' or @tag = '652' or @tag = '710' or @tag = '730' or @tag = '740' or @tag = '810' or @tag = '822' or @tag = '856')] | mx:record/mx:datafield[@tag = '822'][(mx:subfield[@code = 'a'])] | @*"
+                select="mx:datafield[not(@tag = '010' or @tag = '039' or @tag = '100' or @tag = '101' or @tag = '103' or @tag = '105' or @tag = '106' or @tag = '123' or @tag = '128' or @tag = '150' or @tag = '152' or @tag = '154' or @tag = '160' or 
+                @tag = '210' or @tag = '230' or @tag = '240' or (starts-with(@tag, '30') and @tag != '305') or @tag = '330' or starts-with(@tag, '34') or (starts-with(@tag, '35') and @tag != '356') or starts-with(@tag, '36')
+                or @tag = '410' or @tag = '430' or @tag = '440' or @tag = '500' or @tag = '510' or @tag = '515' or @tag = '516' or @tag = '520' or @tag = '530' or @tag = '540' or @tag = '550' or @tag = '580' 
+                or @tag = '652' or @tag = '710' or @tag = '730' or @tag = '740' or @tag = '810' or @tag = '822' or @tag = '856' or starts-with(@tag, '9'))] | mx:datafield[@tag = '822'][(mx:subfield[@code = 'a'])] | @*"
             />
         </record>
         </xsl:variable>
@@ -379,9 +403,12 @@
         <xsl:variable name="date" select="current-date()"/>
         <datafield ind1="#" ind2="#" tag="033">
             <subfield code="a">
+                <xsl:value-of select="normalize-space(//mx:controlfield[@tag = '009'])"/>
+            </subfield>
+            <subfield code="2">
                 <xsl:value-of select="normalize-space(//mx:controlfield[@tag = '003'])"/>
             </subfield>
-            <subfield code="2">BNF</subfield>
+            
             <subfield code="d">
                 <xsl:value-of select="format-date($date, '[Y0001][M01][D01]')"/>
             </subfield>
@@ -394,6 +421,9 @@
             </subfield>
         </datafield>
     </xsl:template>
+    
+
+    
     <!--ERM sept 22 réécriture du template "typeAut"  qui type l'autorité en 008
         pour traiter l'erreur :  La zone 200 n'est pas compatible avec le type de document Td 
     il faut changer le type de notice sur la base de l'étiquette du point d'accès. 
@@ -409,9 +439,9 @@
     -->  
         <xsl:template name="typeAut">
         <xsl:param name="code"/>
-        <!--<xsl:variable name="rolemap">;a=p;b=b;c=g;d=m;e=a;f=u;h=q;j=d;l=f;j=z</xsl:variable>-->
-        <xsl:variable name="rolemap">;a=p;b=b;c=g;d=m;e=a;f=u;h=q;l=f</xsl:variable>
-        <xsl:variable name="z2XX"><xsl:value-of select="//mx:datafield[substring(@tag, 1, 1)='2']/@tag"/></xsl:variable>
+        <xsl:variable name="rolemap">;a=p;b=b;c=g;d=m;e=a;f=u;h=q;j=d;l=f;j=z</xsl:variable>
+     <xsl:variable name="rolemap">;a=p;b=b;c=g;d=m;e=a;f=u;h=q;l=f</xsl:variable>
+           <xsl:variable name="z2XX"><xsl:value-of select="//mx:datafield[substring(@tag, 1, 1)='2']/@tag"/></xsl:variable>
             <xsl:choose>
             <xsl:when test="$code='j'">
                 <xsl:choose>
@@ -431,6 +461,7 @@
             select="substring-before(substring-after($rolemap, concat(';', $code, '=')), ';')"/></xsl:otherwise>
         </xsl:choose>        
     </xsl:template>
+    
     <xsl:template name="z103">
         <xsl:if test="//mx:datafield[@tag = '103']">
             <xsl:variable name="z103a">
@@ -1223,7 +1254,7 @@
     <xsl:template match="mx:subfield[@code = '8']">
         <xsl:choose>
             <xsl:when
-                test="./parent::mx:datafield[starts-with(@tag, '5')] or text() = 'frefre' or text() = 'fre   ' or text() = 'fre ' or contains(., '|||')"/>
+                test="./parent::mx:datafield[starts-with(@tag, '5')] or text() = 'frefre' or text() = 'fre' or text() = 'fre   ' or text() = 'fre ' or contains(., '|||')"/>
             <xsl:otherwise>
                 <subfield code="8">
                     <xsl:value-of select="."/>
