@@ -109,19 +109,19 @@
 					    </datafield>
 											
 						
-<!--						<!-\-Ajout FML -\->						
-						<xsl:for-each select="mx:controlfield[@tag = '001']">
+						<!--Ajout FML -->						
+					<!--	<xsl:for-each select="mx:controlfield[@tag = '001']">
 							<datafield tag="035" ind1="#" ind2="#">
 									<subfield code="a">
 										<xsl:value-of select="text()"/>
 									</subfield>
 									</datafield>
-						</xsl:for-each>
+						</xsl:for-each>-->
 						
-						<!-\-Ajout FML : l'idviaf venant du JAVA -\->	
+						<!--Ajout FML : l'idviaf venant du JAVA -->	
 						<datafield ind1="#" ind2="#" tag="035">							
 							<subfield code="a">
-								<xsl:value-of select="$idviaf"/>
+								<xsl:value-of select="concat('viaf/',$idviaf)"/>
 							</subfield>
 							<subfield code="2">
 								<xsl:text>VIAF</xsl:text>
@@ -133,7 +133,7 @@
 								<xsl:value-of select="$dateJour"/>
 							</subfield>
 							
-						</datafield>-->
+						</datafield>
 						
 						
 						
@@ -508,11 +508,25 @@
                     <subfield code="a">
                         <xsl:value-of select="substring-before(text(), ', ')"/>
                     </subfield>
-                    <subfield code="b" >
-                        <xsl:call-template name="removeEndPuctuation">
-                            <xsl:with-param name="text" select="substring-after(text(), ', ')"/>
-                        </xsl:call-template>
-                    </subfield>
+                	<xsl:choose>
+                		<xsl:when	test="parent::node()/mx:subfield[@code = 'q']">
+                			<xsl:for-each select="parent::node()/mx:subfield[@code = 'q']">
+                				<subfield code="b" >
+                					<xsl:call-template name="removeEndPuctuation">
+                						<xsl:with-param name="text" select="translate(translate(text(),'(',''),')','')"/>
+                					</xsl:call-template>
+                				</subfield>
+                			</xsl:for-each>
+               		 </xsl:when>
+            	<xsl:otherwise>
+            		<subfield code="b" >
+            			<xsl:call-template name="removeEndPuctuation">
+            				<xsl:with-param name="text" select="substring-after(text(), ', ')"/>
+            			</xsl:call-template>
+            		</subfield>	
+            	</xsl:otherwise>	
+                	</xsl:choose>
+                    
                 </xsl:when>
                 <xsl:otherwise>
                     <subfield code="a" >
@@ -523,6 +537,8 @@
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
+    	
+ 
         <xsl:for-each select="mx:subfield[@code = 'b']">
             <subfield code="d" >
                 <xsl:call-template name="removeEndPuctuation">
@@ -547,13 +563,7 @@
                 <xsl:value-of select="text()"/>
             </subfield>
         </xsl:for-each>
-        <xsl:for-each select="mx:subfield[@code = 'q']">
-            <subfield code="g" >
-                <xsl:call-template name="removeEndPuctuation">
-                    <xsl:with-param name="text" select="text()"/>
-                </xsl:call-template>
-            </subfield>
-        </xsl:for-each>
+ 
         <xsl:for-each select="mx:subfield[@code = 'u']">
             <subfield code="p" >
                 <xsl:value-of select="text()"/>
