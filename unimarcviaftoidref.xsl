@@ -129,7 +129,7 @@
                 <!--Ajout FML : l'idviaf venant du JAVA -->
                 <datafield ind1="#" ind2="#" tag="035">
                     <subfield code="a">
-                        <xsl:value-of select="$idviaf"/>
+                        <xsl:value-of select="concat('https://viaf.org/viaf/',$idviaf)"/>
                     </subfield>
                     <subfield code="2">
                         <xsl:text>VIAF</xsl:text>
