@@ -2,7 +2,7 @@
 
 <!--     XSL de transformation du marc21Xml en marcXml Sudoc.
     Objectifs : rendre conforme au marcXml Sudoc :
-    v 20221018
+    v 20221001
   -->
 <xsl:stylesheet exclude-result-prefixes="srw  mx mxc xsi xs" version="2.0"
 	xmlns:mxc="info:lc/xmlns/marcxchange-v2" xmlns:srw="http://www.loc.gov/zing/srw/"
@@ -120,7 +120,7 @@
 			<!--Ajout FML : l'idviaf venant du JAVA -->
 			<datafield ind1="#" ind2="#" tag="035">
 				<subfield code="a">
-					<xsl:value-of select="concat('viaf/', $idviaf)"/>
+					<xsl:value-of select="concat('https://viaf.org/viaf/', $idviaf)"/>
 				</subfield>
 				<subfield code="2">
 					<xsl:text>VIAF</xsl:text>
