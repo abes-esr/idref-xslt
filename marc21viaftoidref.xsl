@@ -13,7 +13,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output encoding="UTF-8" indent="yes" method="xml"/>
     <xsl:param name="token"/>
-    <xsl:param name="idviaf"/>
+    <xsl:param name="idviaf" select="'toto'" />
     <xsl:strip-space elements="*"/>
     <xsl:variable name="dateJour">
         <xsl:value-of select="format-date(current-date(), '[Y0001][M01][D01]')"/>
@@ -133,7 +133,7 @@
 							</datafield>
 						</xsl:for-each>
 						
-<!--						<xsl:for-each select="marc:controlfield[@tag = '008']">-->
+						<xsl:for-each select="marc:controlfield[@tag = '008']">
 							<!--<datafield tag="100" ind1=" " ind2=" ">
 								<subfield code="a">
 									<xsl:variable name="dateEnteredOnFile">
@@ -290,7 +290,7 @@
 									<xsl:value-of select="concat(translate(substring(text(), 13, 1), 'n', 'x'), ' ')"/>
 								</subfield>
 							</datafield>-->
-						<!--</xsl:for-each>-->
+						</xsl:for-each>
 						
 						<!--	Ajout FML-->
 						<datafield ind1="#" ind2="#" tag="106">
@@ -650,6 +650,6 @@
             </xsl:when>
         </xsl:choose>
     </xsl:template>
-        
-
+   
+    
 </xsl:stylesheet>
