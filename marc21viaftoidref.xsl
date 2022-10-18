@@ -427,7 +427,7 @@
 					</xsl:choose>
 				</datafield>
 			</xsl:for-each>
-			<xsl:for-each select="mx:datafield[@tag = '400']">
+			<xsl:for-each select="mx:datafield[@tag = '700']">
 				<datafield tag="700" ind1="#">
 					<xsl:choose>
 						<xsl:when test="@ind1 != 3">
