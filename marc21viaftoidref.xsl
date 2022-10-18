@@ -249,7 +249,7 @@
 								</subfield>
 								<!-\- fixme complete conversion -\->
 							</datafield>-->
-				<xsl:variable name="z120_sza" select="substring(text(), 33, 1)"/>
+				<!--<xsl:variable name="z120_sza" select="substring(text(), 33, 1)"/>
 				<xsl:if test="$z120_sza='a' or $z120_sza='b'">
 				<datafield tag="120" ind1="#" ind2="#">
 					<subfield code="a">
@@ -259,7 +259,7 @@
 						</xsl:choose>
 					</subfield>
 				</datafield>
-				</xsl:if>
+				</xsl:if>-->
 				
 				<!--<datafield tag="150" ind1=" " ind2=" ">
 								<subfield code="a">
