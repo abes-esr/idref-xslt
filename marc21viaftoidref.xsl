@@ -13,7 +13,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output encoding="UTF-8" indent="yes" method="xml"/>
     <xsl:param name="token"/>
-    <xsl:param name="idviaf" select="'toto'" />
+    <xsl:param name="idviaf"/>
     <xsl:strip-space elements="*"/>
     <xsl:variable name="dateJour">
         <xsl:value-of select="format-date(current-date(), '[Y0001][M01][D01]')"/>
