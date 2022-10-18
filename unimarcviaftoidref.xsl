@@ -336,7 +336,7 @@
                     * 516
                 -->
             <xsl:apply-templates
-                select="mx:datafield[not(@tag = '010' or @tag = '039' or @tag = '100' or @tag = '101' or @tag = '103' or @tag = '105' or @tag = '106' or @tag = '123' or @tag = '128' or @tag = '150' or @tag = '152' or @tag = '154' or @tag = '160' or 
+                select="mx:datafield[not(@tag = '010' or @tag = '039' or @tag = '095' or @tag = '100' or @tag = '101' or @tag = '103' or @tag = '105' or @tag = '106' or @tag = '123' or @tag = '128' or @tag = '150' or @tag = '152' or @tag = '154' or @tag = '160' or 
                 @tag = '210' or @tag = '230' or @tag = '240' or (starts-with(@tag, '30') and @tag != '305') or @tag = '330' or starts-with(@tag, '34') or (starts-with(@tag, '35') and @tag != '356') or starts-with(@tag, '36')
                 or @tag = '410' or @tag = '430' or @tag = '440' or @tag = '500' or @tag = '510' or @tag = '515' or @tag = '516' or @tag = '520' or @tag = '530' or @tag = '540' or @tag = '550' or @tag = '580' 
                 or @tag = '652' or @tag = '710' or @tag = '730' or @tag = '740' or @tag = '810' or @tag = '822' or @tag = '856' or starts-with(@tag, '9'))] | mx:datafield[@tag = '822'][(mx:subfield[@code = 'a'])] | @*"
