@@ -345,6 +345,8 @@
 							</datafield>
 						</xsl:for-each>
 						
+
+						
 						<!--	Ajout FML-->						
 						<xsl:for-each select="mx:datafield[@tag = '377']">
 							<datafield tag="101" ind1="#" ind2="#">
@@ -374,6 +376,7 @@
 									<datafield tag="200" ind1="#">
 										<xsl:call-template name="convertPersonalNameSubfields">
 											<xsl:with-param name="field" select="."/>
+											<xsl:with-param name="tag" select="@tag"/>
 										</xsl:call-template>
 									</datafield>
 								</xsl:when>
@@ -404,7 +407,8 @@
 									<xsl:when test="@ind1 != 3" >
 										<xsl:call-template name="convertPersonalNameSubfields">
 											<xsl:with-param name="field" select="."/>
-										</xsl:call-template>
+
+											<xsl:with-param name="tag" select="@tag"/>										</xsl:call-template>
 									</xsl:when>
 								</xsl:choose>
 							</datafield>
@@ -415,6 +419,7 @@
 									<xsl:when test="@ind1 != 3" >
 										<xsl:call-template name="convertPersonalNameSubfields">
 											<xsl:with-param name="field" select="."/>
+											<xsl:with-param name="tag" select="@tag"/>
 										</xsl:call-template>
 									</xsl:when>
 								</xsl:choose>
@@ -499,9 +504,12 @@
     
     <xsl:template name="convertPersonalNameSubfields">
         <xsl:param name="field"></xsl:param>
+    	<xsl:param name="tag"></xsl:param>
+   
         <xsl:attribute name="ind2">
             <xsl:value-of select="@ind1"/>
-        </xsl:attribute>
+        </xsl:attribute> field :	<xsl:value-of select="$field"/>
+    	tag :	<xsl:value-of select="$tag"/>
         <xsl:for-each select="mx:subfield[@code = 'a']">
             <xsl:choose>
                 <xsl:when test="contains(text(), ', ')">
@@ -551,13 +559,20 @@
                 <xsl:value-of select="text()"/>
             </subfield>
         </xsl:for-each>
-        <xsl:for-each select="mx:subfield[@code = 'd']">
+    	<xsl:if test="$tag='100'">
+    	<xsl:call-template name="z200_vie_mort">
+    	
+    	</xsl:call-template>
+    	</xsl:if>
+    
+    	
+<!--        <xsl:for-each select="mx:subfield[@code = 'd']">
             <subfield code="f" >
                 <xsl:call-template name="removeEndPuctuation">
                     <xsl:with-param name="text" select="text()"/>
                 </xsl:call-template>
             </subfield>
-        </xsl:for-each>
+        </xsl:for-each>-->
         <xsl:for-each select="mx:subfield[@code = 'e']">
             <subfield code="4" >
                 <xsl:value-of select="text()"/>
@@ -616,7 +631,18 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-    
+<xsl:template name="z200_vie_mort">	
+	<xsl:variable name="AnneeVie">
+		<xsl:value-of select="substring(//mx:datafield[@tag = '046']/mx:subfield[@code = 'f'], 1, 4)"/>
+	</xsl:variable>
+	<xsl:variable name="AnneeMort">
+		<xsl:value-of select="substring(//mx:datafield[@tag = '046']/mx:subfield[@code = 'g'], 1, 4)"/>
+	</xsl:variable>
+	
+	<subfield code="f" >
+		<xsl:value-of select="concat($AnneeVie,'-',$AnneeMort)"/>
+	</subfield>
+</xsl:template>
     <xsl:template name="removeEndPuctuation">
         <xsl:param name="text"/>
         <xsl:choose>
