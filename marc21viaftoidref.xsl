@@ -51,7 +51,7 @@
     </xsl:template>
     	
 	<xsl:template match="mx:record">
-					<record type="Authority" format="UNIMARC">
+					<record>
 <!--						<xsl:for-each select="mx:leader">
 							<leader>
 								<xsl:variable name="recordLenght">00000</xsl:variable>
