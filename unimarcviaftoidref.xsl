@@ -149,6 +149,7 @@
                 <xsl:call-template name="z106">
                     <xsl:with-param name="leader09_008" select="$leader09_008"/>
                 </xsl:call-template>
+                <xsl:call-template name="z120"/>
                 <xsl:for-each select="//mx:datafield[@tag = '123']">
                     <datafield ind1="#" ind2="#" tag="123">
                         <xsl:for-each select="mx:subfield">
@@ -335,7 +336,7 @@
                 -->
                 <xsl:apply-templates
                     select="
-                        mx:datafield[not(@tag = '010' or @tag = '039' or @tag = '095' or @tag = '100' or @tag = '101' or @tag = '103' or @tag = '105' or @tag = '106' or @tag = '109' or @tag = '123' or @tag = '128' or @tag = '150' or @tag = '152' or @tag = '154' or @tag = '160' or
+                    mx:datafield[not(@tag = '010' or @tag = '039' or @tag = '095' or @tag = '100' or @tag = '101' or @tag = '103' or @tag = '105' or @tag = '106' or @tag = '109' or @tag = '120' or @tag = '123' or @tag = '128' or @tag = '150' or @tag = '152' or @tag = '154' or @tag = '160' or
                         @tag = '210' or @tag = '230' or @tag = '240' or (starts-with(@tag, '30') and @tag != '305') or @tag = '330' or starts-with(@tag, '34') or (starts-with(@tag, '35') and @tag != '356') or starts-with(@tag, '36')
                         or @tag = '410' or @tag = '430' or @tag = '440' or @tag = '500' or @tag = '510' or @tag = '515' or @tag = '516' or @tag = '520' or @tag = '530' or @tag = '540' or @tag = '550' or @tag = '580'
                         or @tag = '652' or @tag = '710' or @tag = '730' or @tag = '740' or @tag = '810' or @tag = '822' or @tag = '856' or starts-with(@tag, '9'))] | mx:datafield[@tag = '822'][(mx:subfield[@code = 'a'])] | @*"
@@ -569,6 +570,21 @@
             </xsl:if>
         </xsl:if>
     </xsl:template>
+    
+    <xsl:template name="z120">
+        <xsl:if test="//mx:datafield[@tag = '120'][mx:subfield[@code = 'a']!='']">
+        <datafield ind1="#" ind2="#" tag="120">
+            <subfield code="a">
+                <xsl:value-of select="substring(//mx:datafield[@tag = '120']/mx:subfield[@code = 'a'],1,1)"/>
+            </subfield>
+        </datafield>
+        </xsl:if>
+        
+        
+    </xsl:template>
+    
+    
+    
     <xsl:template name="z128">
         <xsl:variable name="z128a"
             select="normalize-space(//mx:datafield[@tag = '128']/mx:subfield[@code = 'a'])"/>
