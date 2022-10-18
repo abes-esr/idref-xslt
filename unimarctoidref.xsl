@@ -137,7 +137,7 @@
 						
 						
 						
-						<xsl:for-each select="mx:datafield[@tag = '035']">
+					<!--	<xsl:for-each select="mx:datafield[@tag = '035']">
 							<datafield tag="035" ind1="#" ind2="#">
 								<xsl:for-each select="mx:subfield[@code = 'a']">
 									<subfield code="a">
@@ -150,7 +150,7 @@
 									</subfield>
 								</xsl:for-each>
 							</datafield>
-						</xsl:for-each>
+						</xsl:for-each>-->
 						
 						<xsl:for-each select="mx:controlfield[@tag = '008']">
 							<!--<datafield tag="100" ind1=" " ind2=" ">
