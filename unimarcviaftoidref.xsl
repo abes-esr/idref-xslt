@@ -318,7 +318,7 @@
                     </xsl:variable>
                     <subfield code="a">
                         <xsl:value-of
-                            select="concat('Notice BnF dérivée via IdRef, le ', $dateJour2)"/>
+                            select="concat('Notice issue de VIAF dérivée via IdRef, le ', $dateJour2)"/>
                     </subfield>
                 </datafield>
                 <!--ERM le 24/06/20 -->
