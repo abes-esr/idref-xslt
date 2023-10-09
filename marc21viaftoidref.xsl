@@ -158,22 +158,22 @@
 				<datafield tag="123" ind1="#" ind2="#" >
 					<xsl:for-each select="mx:subfield[@code = 'd']">
 						<subfield code="d">
-							<xsl:value-of select="text()"/>
+							<xsl:value-of select="lower-case(text())"/>
 						</subfield>
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 'e']">
 						<subfield code="e">
-							<xsl:value-of select="text()"/>
+							<xsl:value-of select="lower-case(text())"/>
 						</subfield>
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 'f']">
 						<subfield code="f">
-							<xsl:value-of select="text()"/>
+							<xsl:value-of select="lower-case(text())"/>
 						</subfield>
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 'g']">
 						<subfield code="g">
-							<xsl:value-of select="text()"/>
+							<xsl:value-of select="lower-case(text())"/>
 						</subfield>
 					</xsl:for-each>
 			</datafield>
