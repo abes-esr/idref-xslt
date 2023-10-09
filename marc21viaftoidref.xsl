@@ -594,13 +594,7 @@
 
 	<xsl:template name="datafield856">
 		<xsl:for-each select="mx:datafield[@tag = 856]">
-			<datafield tag="856">
-				<xsl:attribute name="ind1">
-					<xsl:value-of select="@ind1"/>
-				</xsl:attribute>
-				<xsl:attribute name="ind2">
-					<xsl:value-of select="@ind2"/>
-				</xsl:attribute>
+			<datafield tag="856" ind1="#" ind2="#">
 				<xsl:for-each select="mx:subfield[@code]">
 					<subfield>
 						<xsl:attribute name="code">
