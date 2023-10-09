@@ -101,11 +101,39 @@
 						</xsl:for-each>-->
 
 			<!--Ajout FML -->
-			<datafield tag="008">
-				<subfield code="a">
-					<xsl:value-of select="'Tp5'"/>
-				</subfield>
-			</datafield>
+			<xsl:if test="mx:datafield[@tag = '100']">
+				<datafield tag="008">
+					<subfield code="a">
+						<xsl:value-of select="'Tp5'"/>
+					</subfield>
+				</datafield>
+			</xsl:if>
+			
+			<xsl:if test="mx:datafield[@tag = '151']">
+				<datafield tag="008">
+					<subfield code="a">
+						<xsl:value-of select="'Tg5'"/>
+					</subfield>
+				</datafield>
+			</xsl:if>	
+			
+			<xsl:for-each select="mx:datafield[@tag = '151']">
+					<datafield tag="215">
+						<subfield code="a">
+							<xsl:value-of select="."/>
+						</subfield>
+					</datafield>
+			</xsl:for-each>
+			
+			<xsl:for-each select="mx:datafield[@tag = '551']">
+				<datafield tag="415" ind1="#" ind2="#" >
+					<xsl:for-each select="mx:subfield[@code = 'a']">
+						<subfield code="a">
+							<xsl:value-of select="text()"/>
+						</subfield>
+					</xsl:for-each>
+				</datafield>
+			</xsl:for-each>
 
 
 			<!--Ajout FML -->
@@ -116,11 +144,46 @@
 									</subfield>
 									</datafield>
 						</xsl:for-each>-->
+			<xsl:for-each select="mx:datafield[@tag = '667']">
+				<datafield tag="830" ind1="#" ind2="#">
+					<xsl:for-each select="mx:subfield[@code = 'a']">
+						<subfield code="a">
+							<xsl:value-of select="text()"/>
+						</subfield>
+					</xsl:for-each>
+				</datafield>
+			</xsl:for-each>			
+
+			<xsl:for-each select="mx:datafield[@tag = '034']">
+				<datafield tag="123" ind1="#" ind2="#" >
+					<xsl:for-each select="mx:subfield[@code = 'd']">
+						<subfield code="a">
+							<xsl:value-of select="text()"/>
+						</subfield>
+					</xsl:for-each>
+					<xsl:for-each select="mx:subfield[@code = 'e']">
+						<subfield code="a">
+							<xsl:value-of select="text()"/>
+						</subfield>
+					</xsl:for-each>
+					<xsl:for-each select="mx:subfield[@code = 'f']">
+						<subfield code="a">
+							<xsl:value-of select="text()"/>
+						</subfield>
+					</xsl:for-each>
+					<xsl:for-each select="mx:subfield[@code = 'g']">
+						<subfield code="a">
+							<xsl:value-of select="text()"/>
+						</subfield>
+					</xsl:for-each>
+			</datafield>
+			</xsl:for-each>
+			
 
 			<!--Ajout FML : l'idviaf venant du JAVA -->
 			<datafield ind1="#" ind2="#" tag="035">
 				<subfield code="a">
-					<xsl:value-of select="concat('https://viaf.org/viaf/', $idviaf)"/>
+					<xsl:value-of select="concat('https://viaf.org/viaf/',$idviaf)"/>
 				</subfield>
 				<subfield code="2">
 					<xsl:text>VIAF</xsl:text>
@@ -131,7 +194,6 @@
 				<subfield code="d">
 					<xsl:value-of select="$dateJour"/>
 				</subfield>
-
 			</datafield>
 
 
@@ -151,175 +213,15 @@
 							</datafield>
 						</xsl:for-each>-->
 
-			<xsl:for-each select="mx:controlfield[@tag = '008']">
-				<!--<datafield tag="100" ind1=" " ind2=" ">
-								<subfield code="a">
-									<xsl:variable name="dateEnteredOnFile">
-										<xsl:choose>
-											<xsl:when test="substring(text(), 1, 2) &lt; 70">
-												<xsl:value-of select="concat('20', substring(text(), 1, 6))"/>
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:value-of select="concat('19', substring(text(), 1, 6))"/>
-											</xsl:otherwise>
-										</xsl:choose>
-									</xsl:variable>
-									<xsl:variable name="establishmentLevel">
-										<xsl:choose>
-											<xsl:when test="substring(text(), 34, 1) = 'b'">a</xsl:when>
-											<xsl:when test="substring(text(), 34, 1) = 'd'">c</xsl:when>
-											<xsl:when test="substring(text(), 34, 1) = 'n'">x</xsl:when>
-											<xsl:otherwise>
-												<xsl:value-of select="substring(text(), 34, 1)"/>
-											</xsl:otherwise>
-										</xsl:choose>
-									</xsl:variable>
-									<xsl:variable name="cataloguingLanguage">
-										<xsl:choose>
-											<xsl:when test="datafield[@tag = '040']/subfield[@code = 'b']">
-												<xsl:value-of select="mx:datafield[@tag = '040']/subfield[@code = 'b']" />
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:choose>
-													<xsl:when test="substring(text(), 34, 1) = 'b'">eng</xsl:when>
-													<xsl:when test="substring(text(), 34, 1) = 'e'">eng</xsl:when>
-													<xsl:when test="substring(text(), 34, 1) = 'f'">fre</xsl:when>
-													<xsl:otherwise>-->
-				<!-- Expected default for MARC21 -->
-				<!-- <xsl:value-of select="'eng'"/>
-													</xsl:otherwise>
-												</xsl:choose>
-											</xsl:otherwise>
-										</xsl:choose>
-									</xsl:variable>
-									<xsl:variable name="transliterationCode">
-										<xsl:choose>
-											<xsl:when test="substring(text(), 8, 1) = 'a'">a</xsl:when>
-											<xsl:when test="substring(text(), 8, 1) = 'b'">b</xsl:when>
-											<xsl:when test="substring(text(), 8, 1) = 'c'">b</xsl:when>
-											<xsl:when test="substring(text(), 8, 1) = 'd'">d</xsl:when>
-											<xsl:when test="substring(text(), 8, 1) = 'e'">b</xsl:when>
-											<xsl:when test="substring(text(), 8, 1) = 'f'">f</xsl:when>
-											<xsl:when test="substring(text(), 8, 1) = 'g'">f</xsl:when>
-											<xsl:when test="substring(text(), 8, 1) = 'n'">y</xsl:when>
-											<xsl:otherwise> </xsl:otherwise>
-										</xsl:choose>
-									</xsl:variable>
-									<xsl:variable name="characterSet">
-										<xsl:choose>
-											<xsl:when test="substring(../mx:leader, 10, 1) = 'a'">50  </xsl:when>-->
-				<!-- what if MARC-8 encoding, and not UTF8? -->
-				<!-- <xsl:otherwise>
-												<xsl:value-of select="'    '"/>
-											</xsl:otherwise>
-										</xsl:choose>
-									</xsl:variable>
-									<xsl:variable name="additionalCharacterSet">
-										<xsl:value-of select="'    '"/>
-									</xsl:variable>-->
-				<!-- Fixme Script of Cataloguing -->
-				<!--<xsl:variable name="cataloguingScript">
-										<xsl:value-of select="'  '"/>
-									</xsl:variable>-->
-				<!-- Fixme Direction of Script of Cataloguing -->
-				<!--<xsl:variable name="scriptDirection">
-										<xsl:value-of select="'1'"/>
-									</xsl:variable>
-									<xsl:value-of
-										select="concat($dateEnteredOnFile, $establishmentLevel, 
-											$cataloguingLanguage, $transliterationCode, 
-											$characterSet, $additionalCharacterSet, 
-											$cataloguingScript, $scriptDirection)"
-									/>
-								</subfield>
-							</datafield> -->
-				<!--<datafield tag="106" ind1=" " ind2=" ">
-								<subfield code="a">
-									<xsl:choose>
-										<xsl:when test="substring(text(), 15, 1) = 'b'">
-											<xsl:value-of select="'2'"/>
-										</xsl:when>
-										<xsl:when test="substring(text(), 16, 1) = 'a'">
-											<xsl:value-of select="'0'"/>
-										</xsl:when>
-										<xsl:when test="substring(text(), 16, 1) = 'b'">
-											<xsl:value-of select="'1'"/>
-										</xsl:when>
-									</xsl:choose>
-								</subfield>
-								<!-\- fixme complete conversion -\->
-							</datafield>-->
-				<!--<xsl:variable name="z120_sza" select="substring(text(), 33, 1)"/>
-				<xsl:if test="$z120_sza='a' or $z120_sza='b'">
-				<datafield tag="120" ind1="#" ind2="#">
-					<subfield code="a">
-						<xsl:choose>
-							<xsl:when test="substring(text(), 33, 1) = 'a'">a</xsl:when>
-							<xsl:when test="substring(text(), 33, 1) = 'b'">b</xsl:when>
-						</xsl:choose>
-					</subfield>
-				</datafield>
-				</xsl:if>-->
-				
-				<!--<datafield tag="150" ind1=" " ind2=" ">
-								<subfield code="a">
-									<xsl:value-of select="translate (substring(text(), 29, 1), ' acfilmosuz',  'ybeafdehcuz')"/>
-								</subfield>
-							</datafield>-->
-				<!--<datafield tag="152" ind1=" " ind2=" ">
-								<subfield code="a">
-									<xsl:choose>-->
-				<!-- fixme complete conversion -->
-				<!--<xsl:when test="substring(text(), 11, 1) = 'c'">
-											<xsl:value-of select="'AACR2'"/>
-										</xsl:when>
-									</xsl:choose>
-								</subfield>
-								<subfield code="b">
-									<xsl:choose>
-										<xsl:when test="substring(text(), 12, 1) = 'a'">
-											<xsl:value-of select="'lc'"/>
-										</xsl:when>
-										<xsl:when test="substring(text(), 12, 1) = 'b'">
-											<xsl:value-of select="'lcch'"/>
-										</xsl:when>
-										<xsl:when test="substring(text(), 12, 1) = 'c'">
-											<xsl:value-of select="'mesh'"/>
-										</xsl:when>
-										<xsl:when test="substring(text(), 12, 1) = 'd'">
-											<xsl:value-of select="'nal'"/>
-										</xsl:when>
-										<xsl:when test="substring(text(), 12, 1) = 'e' and substring(text(), 9, 1) = 'e'">
-											<xsl:value-of select="'cae'"/>
-										</xsl:when>
-										<xsl:when test="substring(text(), 12, 1) = 'e' and substring(text(), 9, 1) = 'f'">
-											<xsl:value-of select="'caf'"/>
-										</xsl:when> -->
-				<!-- What to do if thesaurus source is not specified (substring(text(), 12, 1) = 'd')?  -->
-				<!-- What to do if Art and Architecture Thesaurus (substring(text(), 12, 1) = 'r')? -->
-				<!-- <xsl:when test="substring(text(), 12, 1) = 's'">
-											<xsl:value-of select="'sears'"/>
-										</xsl:when> -->
-				<!-- What to do if Répertoire de vedettes-matière (substring(text(), 12, 1) = 'v')? -->
-				<!-- <xsl:when test="substring(text(), 12, 1) = 'z'">
-											<xsl:value-of select="'local'"/>
-										</xsl:when>
-									</xsl:choose>
-								</subfield>
-								</datafield> -->
-				<!--<datafield tag="154" ind1=" " ind2=" ">
-								<subfield code="a">
-									<xsl:value-of select="concat(translate(substring(text(), 13, 1), 'n', 'x'), ' ')"/>
-								</subfield>
-							</datafield>-->
-			</xsl:for-each>
 
 			<!--	Ajout FML-->
-			<datafield ind1="#" ind2="#" tag="106">
-				<subfield code="a">0</subfield>
-				<subfield code="b">1</subfield>
-				<subfield code="c">0</subfield>
-			</datafield>
+			<xsl:if test="mx:datafield[@tag = '100']">
+				<datafield ind1="#" ind2="#" tag="106">
+					<subfield code="a">0</subfield>
+					<subfield code="b">1</subfield>
+					<subfield code="c">0</subfield>
+				</datafield>
+			</xsl:if>
 
 			<!--	Ajout FML  -->
 
@@ -370,13 +272,11 @@
 					<xsl:for-each select="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c']">
 				<xsl:variable name="z102sz_c" select="."/>
 				<xsl:if test="$z102sz_c != '' and $z102sz_c!='XA' and string-length(normalize-space($z102sz_c))!=3">
-					
 						<xsl:for-each select="tokenize($z102sz_c, '-')">
 							<xsl:if test=".!='XA' and string-length(.)=2">	<subfield code="a">
 								<xsl:value-of select="normalize-space(.)"/>
 							</subfield></xsl:if>
 						</xsl:for-each>
-					
 				</xsl:if>
 				</xsl:for-each>
 				</datafield>
@@ -420,7 +320,6 @@
 						<xsl:when test="@ind1 != 3">
 							<xsl:call-template name="convertPersonalNameSubfields">
 								<xsl:with-param name="field" select="."/>
-
 								<xsl:with-param name="tag" select="@tag"/>
 							</xsl:call-template>
 						</xsl:when>
@@ -492,6 +391,7 @@
 					</xsl:for-each>
 				</datafield>
 			</xsl:for-each>
+			
 			<xsl:for-each select="mx:datafield[@tag = '667']">
 				<datafield tag="830" ind1="#" ind2="#">
 					<xsl:for-each select="mx:subfield[@code = 'a']">
@@ -501,8 +401,10 @@
 					</xsl:for-each>
 				</datafield>
 			</xsl:for-each>
+			
+			<xsl:call-template name="datafield856"/>
 
-			<datafield ind1="#" ind2="#" tag="899">
+			<datafield tag="899" ind1="#" ind2="#">
 				<xsl:variable name="dateJour2">
 					<xsl:value-of select="format-date(current-date(), '[D01]/[M01]/[Y0001]')"/>
 				</xsl:variable>
@@ -512,7 +414,7 @@
 				</subfield>
 			</datafield>
 
-			<xsl:call-template name="datafield856"/>
+
 
 		</record>
 	</xsl:template>
@@ -703,13 +605,13 @@
 					<subfield>
 						<xsl:attribute name="code">
 							<xsl:choose>
-								<xsl:when test="@code = 3">
+								<xsl:when test="@code = '3'">
 									<xsl:value-of select="2"/>
 								</xsl:when>
-								<xsl:when test="@code = 2">
+								<xsl:when test="@code = '2'">
 									<xsl:value-of select="y"/>
 								</xsl:when>
-								<xsl:when test="@code = y">
+								<xsl:when test="@code = 'y'">
 									<xsl:value-of select="2"/>
 								</xsl:when>
 								<xsl:otherwise>
