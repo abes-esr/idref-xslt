@@ -157,22 +157,22 @@
 			<xsl:for-each select="mx:datafield[@tag = '034']">
 				<datafield tag="123" ind1="#" ind2="#" >
 					<xsl:for-each select="mx:subfield[@code = 'd']">
-						<subfield code="a">
+						<subfield code="d">
 							<xsl:value-of select="text()"/>
 						</subfield>
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 'e']">
-						<subfield code="a">
+						<subfield code="f">
 							<xsl:value-of select="text()"/>
 						</subfield>
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 'f']">
-						<subfield code="a">
+						<subfield code="g">
 							<xsl:value-of select="text()"/>
 						</subfield>
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 'g']">
-						<subfield code="a">
+						<subfield code="h">
 							<xsl:value-of select="text()"/>
 						</subfield>
 					</xsl:for-each>
