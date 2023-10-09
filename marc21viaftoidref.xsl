@@ -162,17 +162,17 @@
 						</subfield>
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 'e']">
-						<subfield code="f">
+						<subfield code="e">
 							<xsl:value-of select="text()"/>
 						</subfield>
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 'f']">
-						<subfield code="g">
+						<subfield code="f">
 							<xsl:value-of select="text()"/>
 						</subfield>
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 'g']">
-						<subfield code="h">
+						<subfield code="g">
 							<xsl:value-of select="text()"/>
 						</subfield>
 					</xsl:for-each>
