@@ -231,7 +231,6 @@
 			</xsl:if>
 
 			<!--	Ajout FML  -->
-
 			<xsl:for-each select="mx:datafield[@tag = '046']">
 				<datafield tag="103" ind1="#" ind2="#">
 					<xsl:for-each select="mx:subfield[@code = 'f']">
@@ -492,7 +491,9 @@
 		</xsl:for-each>
 		
 		<xsl:if test="$tag = '100'">
+			<xsl:if test="mx:datafield[@tag = '100']/mx:subfield[@tag = 'd']">
 			<xsl:call-template name="z200_vie_mort"> </xsl:call-template>
+			</xsl:if>
 		</xsl:if>
 
 
