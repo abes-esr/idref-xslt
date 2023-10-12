@@ -125,6 +125,7 @@
 					</datafield>
 			</xsl:for-each>
 			
+			<xsl:if test="mx:datafield[@tag = '151']">
 			<xsl:for-each select="mx:datafield[@tag = '551']">
 				<datafield tag="415" ind1="#" ind2="#" >
 					<xsl:for-each select="mx:subfield[@code = 'w']">
@@ -139,6 +140,7 @@
 					</xsl:for-each>
 				</datafield>
 			</xsl:for-each>
+			</xsl:if>
 
 
 			<!--Ajout FML -->
@@ -483,6 +485,12 @@
 				<xsl:value-of select="text()"/>
 			</subfield>
 		</xsl:for-each>
+		<xsl:for-each select="mx:subfield[@code = 'd']">
+			<subfield code="f">
+				<xsl:value-of select="text()"/>
+			</subfield>
+		</xsl:for-each>
+		
 		<xsl:if test="$tag = '100'">
 			<xsl:call-template name="z200_vie_mort"> </xsl:call-template>
 		</xsl:if>
