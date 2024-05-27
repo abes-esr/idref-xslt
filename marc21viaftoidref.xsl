@@ -120,7 +120,7 @@
 		    </xsl:if>
 		    
 		    <xsl:for-each select="mx:datafield[@tag = '110']">
-		        <datafield tag="210" ind1="#" ind2="#">
+		        <datafield tag="210" ind1="0" ind2="#">
 		            <subfield code="a">
 		                <xsl:value-of select="concat('@',.)"/>
 		            </subfield>
