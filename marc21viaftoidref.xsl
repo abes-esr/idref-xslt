@@ -108,6 +108,45 @@
 					</subfield>
 				</datafield>
 			</xsl:if>
+
+					    <!--Ajout FML mai 2024 : traitement des Collectivités -->
+		    
+		    <xsl:if test="mx:datafield[@tag = '110']">
+		        <datafield tag="008">
+		            <subfield code="a">
+		                <xsl:value-of select="'Tb5'"/>
+		            </subfield>
+		        </datafield>
+		    </xsl:if>
+		    
+		    <xsl:for-each select="mx:datafield[@tag = '110']">
+		        <datafield tag="210" ind1="#" ind2="#">
+		            <subfield code="a">
+		                <xsl:value-of select="concat('@',.)"/>
+		            </subfield>
+		        </datafield>
+		    </xsl:for-each>
+		    
+		    <xsl:if test="mx:datafield[@tag = '110']">
+		        <xsl:for-each select="mx:datafield[@tag = '410']">
+		            <datafield tag="410" ind1="#" ind2="#" >
+		                <xsl:for-each select="mx:subfield[@code = 'w']">
+		                    <subfield code="5">
+		                        <xsl:value-of select="text()"/>
+		                    </subfield>
+		                </xsl:for-each>
+		                <xsl:for-each select="mx:subfield[@code = 'a']">
+		                    <subfield code="a">
+		                        <xsl:value-of select="concat('@',text())"/>
+		                    </subfield>
+		                </xsl:for-each>
+		            </datafield>
+		        </xsl:for-each>
+		    </xsl:if>
+		    
+		    <!-- FIN traitement des Collectivités -->
+		    
+		    <!--Ajout FML automne 2023 : traitement des Lieux Géographiques -->
 			
 			<xsl:if test="mx:datafield[@tag = '151']">
 				<datafield tag="008">
