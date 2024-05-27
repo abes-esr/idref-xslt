@@ -129,7 +129,7 @@
 		    
 		    <xsl:if test="mx:datafield[@tag = '110']">
 		        <xsl:for-each select="mx:datafield[@tag = '410']">
-		            <datafield tag="410" ind1="#" ind2="#" >
+		            <datafield tag="410" ind1="0" ind2="#" >
 		                <xsl:for-each select="mx:subfield[@code = 'w']">
 		                    <subfield code="5">
 		                        <xsl:value-of select="text()"/>
