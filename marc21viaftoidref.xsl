@@ -109,7 +109,7 @@
 				</datafield>
 			</xsl:if>
 
-					    <!--Ajout FML mai 2024 : traitement des Collectivités -->
+					     <!--Ajout FML juin 2024 : traitement des Collectivités -->
 		    
 		    <xsl:if test="mx:datafield[@tag = '110']">
 		        <datafield tag="008">
@@ -120,16 +120,21 @@
 		    </xsl:if>
 		    
 		    <xsl:for-each select="mx:datafield[@tag = '110']">
-		        <datafield tag="210" ind1="0" ind2="#">
+		        <datafield tag="210" ind1="#" ind2="#">
 		            <subfield code="a">
-		                <xsl:value-of select="concat('@',.)"/>
+		            	<xsl:value-of select="concat('@',mx:subfield[@code = 'a'])"/>
 		            </subfield>
+		        	<xsl:if test="mx:subfield[@code = 'b']">
+		        		<subfield code="b">
+		        			<xsl:value-of select="mx:subfield[@code = 'b']"/>
+		        		</subfield>
+		        	</xsl:if>
 		        </datafield>
 		    </xsl:for-each>
 		    
 		    <xsl:if test="mx:datafield[@tag = '110']">
 		        <xsl:for-each select="mx:datafield[@tag = '410']">
-		            <datafield tag="410" ind1="0" ind2="#" >
+		            <datafield tag="410" ind1="#" ind2="#" >
 		                <xsl:for-each select="mx:subfield[@code = 'w']">
 		                    <subfield code="5">
 		                        <xsl:value-of select="text()"/>
@@ -140,6 +145,12 @@
 		                        <xsl:value-of select="concat('@',text())"/>
 		                    </subfield>
 		                </xsl:for-each>
+		            	<xsl:for-each select="mx:subfield[@code = 'b']">		            	
+		            		<subfield code="b">
+		            			<xsl:value-of select="text()"/>
+		            		</subfield>
+		            	</xsl:for-each>
+		            	
 		            </datafield>
 		        </xsl:for-each>
 		    </xsl:if>
