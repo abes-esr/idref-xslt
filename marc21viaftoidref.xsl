@@ -288,7 +288,8 @@
 				</datafield>
 			</xsl:if>
 
-			<!--	Ajout FML  -->
+
+			<!--	Ajout FML ; ajout juin 24 du $q et $r  -->
 			<xsl:for-each select="mx:datafield[@tag = '046']">
 				<datafield tag="103" ind1="#" ind2="#">
 					<xsl:for-each select="mx:subfield[@code = 'f']">
@@ -299,6 +300,16 @@
 					<xsl:for-each select="mx:subfield[@code = 'g']">
 						<subfield code="b">
 							<xsl:value-of select="translate(., '-', '')"/>
+						</subfield>
+					</xsl:for-each>
+					<xsl:for-each select="mx:subfield[@code = 'q']">
+						<subfield code="a">
+							<xsl:value-of select="translate(., '-', '')"/>
+						</subfield>
+					</xsl:for-each>
+					<xsl:for-each select="mx:subfield[@code = 'r']">
+						<subfield code="b">
+								<xsl:value-of select="translate(., '-', '')"/>
 						</subfield>
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 's']">
