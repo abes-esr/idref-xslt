@@ -452,7 +452,8 @@
 							</xsl:for-each>
 						</xsl:for-each> -->
 		
-			<xsl:for-each select="mx:datafield[@tag = '670']">
+			<!-- 01.07.2024 FML : traitement du $u 	-->
+			<!-- <xsl:for-each select="mx:datafield[@tag = '670']">
 				<datafield tag="810" ind1="#" ind2="#">
 					<xsl:for-each select="mx:subfield[@code = 'a']">
 						<subfield code="a">
@@ -465,6 +466,34 @@
 						</subfield>
 					</xsl:for-each>
 				</datafield>
+			</xsl:for-each> -->
+			
+			<xsl:for-each select="mx:datafield[@tag = '670']">
+				<xsl:choose>
+					<!-- Cas où le subfield 'u' est présent -->
+					<xsl:when test="mx:subfield[@code = 'u']">
+						<datafield tag="810" ind1="#" ind2="#">
+							<subfield code="a">
+								<xsl:value-of select="mx:subfield[@code = 'u']/text()"/>
+							</subfield>
+						</datafield>
+					</xsl:when>
+					<!-- Cas où le subfield 'u' est absent -->
+					<xsl:otherwise>
+						<datafield tag="810" ind1="#" ind2="#">
+							<xsl:for-each select="mx:subfield[@code = 'a']">
+								<subfield code="a">
+									<xsl:value-of select="text()"/>
+								</subfield>
+							</xsl:for-each>
+							<xsl:for-each select="mx:subfield[@code = 'b']">
+								<subfield code="b">
+									<xsl:value-of select="text()"/>
+								</subfield>
+							</xsl:for-each>
+						</datafield>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:for-each>
 			
 			<xsl:for-each select="mx:datafield[@tag = '667']">
@@ -488,8 +517,6 @@
 						select="concat('Notice issue de VIAF dérivée via IdRef, le ', $dateJour2)"/>
 				</subfield>
 			</datafield>
-
-
 
 		</record>
 	</xsl:template>
