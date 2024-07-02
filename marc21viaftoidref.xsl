@@ -243,7 +243,19 @@
 					</xsl:for-each>
 			</datafield>
 			</xsl:for-each>
-			
+
+						
+			<!--Ajout FML juillet 2024 -->		
+			<xsl:if test="mx:datafield[@tag = '024'][mx:subfield[@code = '2'][text()='isni']]">
+				<datafield tag="010">
+					<subfield code="a">
+						<xsl:value-of select="substring-after(mx:datafield[@tag = '024']/mx:subfield[@code = 'a'], 'http://www.isni.org/isni/')"/>
+					</subfield>
+					<subfield code="2">
+						<xsl:value-of select="'ISNI'"/>
+					</subfield>
+				</datafield>
+			</xsl:if>
 
 			<!--Ajout FML : l'idviaf venant du JAVA -->
 			<datafield ind1="#" ind2="#" tag="035">
