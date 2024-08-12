@@ -354,20 +354,23 @@
 			</xsl:for-each>
 
 			<!--	Ajout FML-->
-			<xsl:if test="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text()!= '' and text()!='XA' and string-length(normalize-space(text()))!=3]">
-				<datafield tag="102" ind1="#" ind2="#">
-					<xsl:for-each select="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c']">
-						<xsl:variable name="z102sz_c" select="upper-case(.)"/>
-				<xsl:if test="$z102sz_c != '' and $z102sz_c!='XA' and string-length(normalize-space($z102sz_c))!=3">
-						<xsl:for-each select="tokenize($z102sz_c, '-')">
-							<xsl:if test=".!='XA' and string-length(.)=2">	<subfield code="a">
-								<xsl:value-of select="normalize-space(.)"/>
-							</subfield></xsl:if>
-						</xsl:for-each>
+				<xsl:if test="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '' and text() != 'XA' and text() != 'XD' and string-length(normalize-space(text())) != 3]">
+				    <datafield tag="102" ind1="#" ind2="#">
+				        <xsl:for-each select="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c']">
+				            <xsl:variable name="z102sz_c" select="upper-case(.)"/>
+				            <xsl:if test="$z102sz_c != '' and $z102sz_c != 'XA' and $z102sz_c != 'XD' and string-length(normalize-space($z102sz_c)) != 3">
+				                <xsl:for-each select="tokenize($z102sz_c, '-')">
+				                    <xsl:if test=". != 'XA' and . != 'XD' and string-length(.) = 2">
+				                        <subfield code="a">
+				                            <xsl:value-of select="normalize-space(.)"/>
+				                        </subfield>
+				                    </xsl:if>
+				                </xsl:for-each>
+				            </xsl:if>
+				        </xsl:for-each>
+				    </datafield>
 				</xsl:if>
-				</xsl:for-each>
-				</datafield>
-			</xsl:if>
+
 
 
 			<xsl:for-each select="mx:datafield[@tag = '100']">
