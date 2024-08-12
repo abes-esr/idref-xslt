@@ -126,13 +126,15 @@
                     </subfield>
                 </datafield>
                 <!--FML ajout d'une variante à destination de SLSP dans le cas 035$2RERO -->
-                <xsl:if test="datafield[@tag='035']/subfield[@code='2'][contains(., 'RERO')]">
+                <xsl:for-each select="datafield[@tag = '035']/subfield[@code='2'][contains(., 'RERO')]">
+                    <xsl:if test="contains(., 'RERO')">
                         <datafield tag="035" ind1=" " ind2=" ">
                             <subfield code="a">
-                                <xsl:value-of select="concat('(RERO)', datafield[@tag='035']/subfield[@code='a'][following-sibling::subfield[@code='2'][contains(., 'RERO')]])"/>
+                                <xsl:value-of select="concat('(RERO)', ../subfield[@code='a'])"/>
                             </subfield>
                         </datafield>
-                </xsl:if>
+                    </xsl:if>
+                </xsl:for-each> 
                 <!-- Bloc 1XX -->
                 <!-- 100->008 : OK voir transform008-->
                 <!-- 101->377   (précision : code de langue MARC : est-ce un souci ?)-->
