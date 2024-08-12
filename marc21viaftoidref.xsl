@@ -354,13 +354,15 @@
 			</xsl:for-each>
 
 			<!--	Ajout FML-->
-				<xsl:if test="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '' and text() != 'XA' and text() != 'XD' and string-length(normalize-space(text())) != 3]">
+				<xsl:variable name="exclusion-list" select="'XA XD XB'"/>
+				
+				<xsl:if test="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '' and not(contains($exclusion-list, text())) and string-length(normalize-space(text())) != 3]">
 				    <datafield tag="102" ind1="#" ind2="#">
 				        <xsl:for-each select="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c']">
 				            <xsl:variable name="z102sz_c" select="upper-case(.)"/>
-				            <xsl:if test="$z102sz_c != '' and $z102sz_c != 'XA' and $z102sz_c != 'XD' and string-length(normalize-space($z102sz_c)) != 3">
+				            <xsl:if test="$z102sz_c != '' and not(contains($exclusion-list, $z102sz_c)) and string-length(normalize-space($z102sz_c)) != 3">
 				                <xsl:for-each select="tokenize($z102sz_c, '-')">
-				                    <xsl:if test=". != 'XA' and . != 'XD' and string-length(.) = 2">
+				                    <xsl:if test="string-length(.) = 2 and not(contains($exclusion-list, .))">
 				                        <subfield code="a">
 				                            <xsl:value-of select="normalize-space(.)"/>
 				                        </subfield>
@@ -370,6 +372,7 @@
 				        </xsl:for-each>
 				    </datafield>
 				</xsl:if>
+
 
 
 
