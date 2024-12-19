@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--     XSL de transformation du marc21Xml en marcXml Sudoc.
-    Objectifs : rendre conforme au marcXml Sudoc :
-    v 20221001
+<!--     XSL de transformation du marc21Xml des sources VIAF dans VIAF en marcXml Sudoc IdRef.
+  
   -->
 <xsl:stylesheet exclude-result-prefixes="srw  mx mxc xsi xs" version="2.0"
 	xmlns:mxc="info:lc/xmlns/marcxchange-v2" xmlns:srw="http://www.loc.gov/zing/srw/"
@@ -108,96 +107,96 @@
 					</subfield>
 				</datafield>
 			</xsl:if>
-	    <!--Ajout FML mai 2024 : traitement des Collectivités -->
-		    
-		    <xsl:if test="mx:datafield[@tag = '110']">
-		        <datafield tag="008">
-		            <subfield code="a">
-		                <xsl:value-of select="'Tb5'"/>
-		            </subfield>
-		        </datafield>
-		    </xsl:if>
-		    
-		    <xsl:for-each select="mx:datafield[@tag = '110']">
-		        <datafield tag="210" ind1="0" ind2="#">
-		            <subfield code="a">
-		            	<xsl:value-of select="concat('@',mx:subfield[@code = 'a'])"/>
-		            </subfield>
-		        	<xsl:if test="mx:subfield[@code = 'b']">
-		        		<subfield code="b">
-		        			<xsl:value-of select="mx:subfield[@code = 'b']"/>
-		        		</subfield>
-		        	</xsl:if>
-		        	<xsl:if test="mx:subfield[@code = 'g']">
-		        		<subfield code="c">
-		        			<xsl:value-of select="mx:subfield[@code = 'g']"/>
-		        		</subfield>
-		        	</xsl:if>
-		        </datafield>
-		    </xsl:for-each>
-		    
-		    <xsl:if test="mx:datafield[@tag = '110']">
-		        <xsl:for-each select="mx:datafield[@tag = '410']">
-		            <datafield tag="410" ind1="0" ind2="#" >
-		                <xsl:for-each select="mx:subfield[@code = 'w']">
-		                    <subfield code="5">
-		                        <xsl:value-of select="text()"/>
-		                    </subfield>
-		                </xsl:for-each>
-		                <xsl:for-each select="mx:subfield[@code = 'a']">
-		                    <subfield code="a">
-		                        <xsl:value-of select="concat('@',text())"/>
-		                    </subfield>
-		                </xsl:for-each>
-		            	<xsl:for-each select="mx:subfield[@code = 'b']">		            	
-		            		<subfield code="b">
-		            			<xsl:value-of select="text()"/>
-		            		</subfield>
-		            	</xsl:for-each>
-		            	<xsl:for-each select="mx:subfield[@code = 'g']">		            	
-		            		<subfield code="c">
-		            			<xsl:value-of select="text()"/>
-		            		</subfield>
-		            	</xsl:for-each>
-		            </datafield>
-		        </xsl:for-each>
-		    </xsl:if>
-		    
-		    <!-- FIN traitement des Collectivités -->
-		    
-		    <!--Ajout FML automne 2023 : traitement des Lieux Géographiques -->
-			
+			<!--Ajout FML mai 2024 : traitement des Collectivités -->
+
+			<xsl:if test="mx:datafield[@tag = '110']">
+				<datafield tag="008">
+					<subfield code="a">
+						<xsl:value-of select="'Tb5'"/>
+					</subfield>
+				</datafield>
+			</xsl:if>
+
+			<xsl:for-each select="mx:datafield[@tag = '110']">
+				<datafield tag="210" ind1="0" ind2="#">
+					<subfield code="a">
+						<xsl:value-of select="concat('@', mx:subfield[@code = 'a'])"/>
+					</subfield>
+					<xsl:if test="mx:subfield[@code = 'b']">
+						<subfield code="b">
+							<xsl:value-of select="mx:subfield[@code = 'b']"/>
+						</subfield>
+					</xsl:if>
+					<xsl:if test="mx:subfield[@code = 'g']">
+						<subfield code="c">
+							<xsl:value-of select="mx:subfield[@code = 'g']"/>
+						</subfield>
+					</xsl:if>
+				</datafield>
+			</xsl:for-each>
+
+			<xsl:if test="mx:datafield[@tag = '110']">
+				<xsl:for-each select="mx:datafield[@tag = '410']">
+					<datafield tag="410" ind1="0" ind2="#">
+						<xsl:for-each select="mx:subfield[@code = 'w']">
+							<subfield code="5">
+								<xsl:value-of select="text()"/>
+							</subfield>
+						</xsl:for-each>
+						<xsl:for-each select="mx:subfield[@code = 'a']">
+							<subfield code="a">
+								<xsl:value-of select="concat('@', text())"/>
+							</subfield>
+						</xsl:for-each>
+						<xsl:for-each select="mx:subfield[@code = 'b']">
+							<subfield code="b">
+								<xsl:value-of select="text()"/>
+							</subfield>
+						</xsl:for-each>
+						<xsl:for-each select="mx:subfield[@code = 'g']">
+							<subfield code="c">
+								<xsl:value-of select="text()"/>
+							</subfield>
+						</xsl:for-each>
+					</datafield>
+				</xsl:for-each>
+			</xsl:if>
+
+			<!-- FIN traitement des Collectivités -->
+
+			<!--Ajout FML automne 2023 : traitement des Lieux Géographiques -->
+
 			<xsl:if test="mx:datafield[@tag = '151']">
 				<datafield tag="008">
 					<subfield code="a">
 						<xsl:value-of select="'Tg5'"/>
 					</subfield>
 				</datafield>
-			</xsl:if>	
-			
+			</xsl:if>
+
 			<xsl:for-each select="mx:datafield[@tag = '151']">
-					<datafield tag="215">
-						<subfield code="a">
-							<xsl:value-of select="."/>
-						</subfield>
-					</datafield>
-			</xsl:for-each>
-			
-			<xsl:if test="mx:datafield[@tag = '151']">
-			<xsl:for-each select="mx:datafield[@tag = '551']">
-				<datafield tag="415" ind1="#" ind2="#" >
-					<xsl:for-each select="mx:subfield[@code = 'w']">
-						<subfield code="5">
-							<xsl:value-of select="text()"/>
-						</subfield>
-					</xsl:for-each>
-					<xsl:for-each select="mx:subfield[@code = 'a']">
-						<subfield code="a">
-							<xsl:value-of select="text()"/>
-						</subfield>
-					</xsl:for-each>
+				<datafield tag="215">
+					<subfield code="a">
+						<xsl:value-of select="."/>
+					</subfield>
 				</datafield>
 			</xsl:for-each>
+
+			<xsl:if test="mx:datafield[@tag = '151']">
+				<xsl:for-each select="mx:datafield[@tag = '551']">
+					<datafield tag="415" ind1="#" ind2="#">
+						<xsl:for-each select="mx:subfield[@code = 'w']">
+							<subfield code="5">
+								<xsl:value-of select="text()"/>
+							</subfield>
+						</xsl:for-each>
+						<xsl:for-each select="mx:subfield[@code = 'a']">
+							<subfield code="a">
+								<xsl:value-of select="text()"/>
+							</subfield>
+						</xsl:for-each>
+					</datafield>
+				</xsl:for-each>
 			</xsl:if>
 
 
@@ -217,10 +216,10 @@
 						</subfield>
 					</xsl:for-each>
 				</datafield>
-			</xsl:for-each>			
+			</xsl:for-each>
 
 			<xsl:for-each select="mx:datafield[@tag = '034']">
-				<datafield tag="123" ind1="#" ind2="#" >
+				<datafield tag="123" ind1="#" ind2="#">
 					<xsl:for-each select="mx:subfield[@code = 'd']">
 						<subfield code="d">
 							<xsl:value-of select="lower-case(text())"/>
@@ -241,15 +240,17 @@
 							<xsl:value-of select="lower-case(text())"/>
 						</subfield>
 					</xsl:for-each>
-			</datafield>
+				</datafield>
 			</xsl:for-each>
 
-						
-			<!--Ajout FML juillet 2024 -->		
-			<xsl:if test="mx:datafield[@tag = '024'][mx:subfield[@code = '2'][text()='isni']]">
+
+			<!--Ajout FML juillet 2024 -->
+			<xsl:if test="mx:datafield[@tag = '024'][mx:subfield[@code = '2'][text() = 'isni']]">
 				<datafield tag="010">
 					<subfield code="a">
-						<xsl:value-of select="substring-after(mx:datafield[@tag = '024']/mx:subfield[@code = 'a'], 'http://www.isni.org/isni/')"/>
+						<xsl:value-of
+							select="substring-after(mx:datafield[@tag = '024']/mx:subfield[@code = 'a'], 'http://www.isni.org/isni/')"
+						/>
 					</subfield>
 					<subfield code="2">
 						<xsl:value-of select="'ISNI'"/>
@@ -260,7 +261,7 @@
 			<!--Ajout FML : l'idviaf venant du JAVA -->
 			<datafield ind1="#" ind2="#" tag="035">
 				<subfield code="a">
-					<xsl:value-of select="concat('https://viaf.org/viaf/',$idviaf)"/>
+					<xsl:value-of select="concat('https://viaf.org/viaf/', $idviaf)"/>
 				</subfield>
 				<subfield code="2">
 					<xsl:text>VIAF</xsl:text>
@@ -273,7 +274,19 @@
 				</subfield>
 			</datafield>
 
-
+			<!--Ajout FML décembre 2024 -->
+			<xsl:if test="mx:datafield[@tag = '035'][contains(mx:subfield[@code = 'a'], 'ISNI')]">
+				<datafield tag="010">
+					<subfield code="a">
+						<xsl:value-of
+							select="substring-after(mx:datafield[@tag = '035']/mx:subfield[@code = 'a'], '(ISNI)')"
+						/>
+					</subfield>
+					<subfield code="2">
+						<xsl:value-of select="'ISNI'"/>
+					</subfield>
+				</datafield>
+			</xsl:if>
 
 			<!--	<xsl:for-each select="mx:datafield[@tag = '035']">
 							<datafield tag="035" ind1="#" ind2="#">
@@ -321,7 +334,7 @@
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 'r']">
 						<subfield code="b">
-								<xsl:value-of select="translate(., '-', '')"/>
+							<xsl:value-of select="translate(., '-', '')"/>
 						</subfield>
 					</xsl:for-each>
 					<xsl:for-each select="mx:subfield[@code = 's']">
@@ -343,35 +356,38 @@
 			<xsl:for-each select="mx:datafield[@tag = '377']">
 				<xsl:variable name="sz_a" select="mx:subfield[@code = 'a']"/>
 				<xsl:if test="$sz_a != ''">
-				<datafield tag="101" ind1="#" ind2="#">
-					<xsl:for-each select="mx:subfield[@code = 'a']">
-						<subfield code="a">
-							<xsl:value-of select="text()"/>
-						</subfield>
-					</xsl:for-each>
-				</datafield>
+					<datafield tag="101" ind1="#" ind2="#">
+						<xsl:for-each select="mx:subfield[@code = 'a']">
+							<subfield code="a">
+								<xsl:value-of select="text()"/>
+							</subfield>
+						</xsl:for-each>
+					</datafield>
 				</xsl:if>
 			</xsl:for-each>
 
 			<!--	Ajout FML-->
-				<xsl:variable name="exclusion-list" select="'XA XD XB'"/>
-				
-				<xsl:if test="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '' and not(contains($exclusion-list, text())) and string-length(normalize-space(text())) != 3]">
-				    <datafield tag="102" ind1="#" ind2="#">
-				        <xsl:for-each select="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c']">
-				            <xsl:variable name="z102sz_c" select="upper-case(.)"/>
-				            <xsl:if test="$z102sz_c != '' and not(contains($exclusion-list, $z102sz_c)) and string-length(normalize-space($z102sz_c)) != 3">
-				                <xsl:for-each select="tokenize($z102sz_c, '-')">
-				                    <xsl:if test="string-length(.) = 2 and not(contains($exclusion-list, .))">
-				                        <subfield code="a">
-				                            <xsl:value-of select="normalize-space(.)"/>
-				                        </subfield>
-				                    </xsl:if>
-				                </xsl:for-each>
-				            </xsl:if>
-				        </xsl:for-each>
-				    </datafield>
-				</xsl:if>
+			<xsl:variable name="exclusion-list" select="'XA XD XB'"/>
+
+			<xsl:if
+				test="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '' and not(contains($exclusion-list, text())) and string-length(normalize-space(text())) != 3]">
+				<datafield tag="102" ind1="#" ind2="#">
+					<xsl:for-each select="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c']">
+						<xsl:variable name="z102sz_c" select="upper-case(.)"/>
+						<xsl:if
+							test="$z102sz_c != '' and not(contains($exclusion-list, $z102sz_c)) and string-length(normalize-space($z102sz_c)) != 3">
+							<xsl:for-each select="tokenize($z102sz_c, '-')">
+								<xsl:if
+									test="string-length(.) = 2 and not(contains($exclusion-list, .))">
+									<subfield code="a">
+										<xsl:value-of select="normalize-space(.)"/>
+									</subfield>
+								</xsl:if>
+							</xsl:for-each>
+						</xsl:if>
+					</xsl:for-each>
+				</datafield>
+			</xsl:if>
 
 
 
@@ -469,7 +485,7 @@
 								</datafield>
 							</xsl:for-each>
 						</xsl:for-each> -->
-		
+
 			<!-- 01.07.2024 FML : traitement du $u 	-->
 			<!-- <xsl:for-each select="mx:datafield[@tag = '670']">
 				<datafield tag="810" ind1="#" ind2="#">
@@ -485,7 +501,7 @@
 					</xsl:for-each>
 				</datafield>
 			</xsl:for-each> -->
-			
+
 			<xsl:for-each select="mx:datafield[@tag = '670']">
 				<xsl:choose>
 					<!-- Cas où le subfield 'u' est présent -->
@@ -513,7 +529,7 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:for-each>
-			
+
 			<xsl:for-each select="mx:datafield[@tag = '667']">
 				<datafield tag="830" ind1="#" ind2="#">
 					<xsl:for-each select="mx:subfield[@code = 'a']">
@@ -523,7 +539,7 @@
 					</xsl:for-each>
 				</datafield>
 			</xsl:for-each>
-			
+
 			<xsl:call-template name="datafield856"/>
 
 			<datafield tag="899" ind1="#" ind2="#">
@@ -603,10 +619,10 @@
 				<xsl:value-of select="text()"/>
 			</subfield>
 		</xsl:for-each>
-		
+
 		<xsl:if test="$tag = '100'">
 			<xsl:if test="mx:datafield[@tag = '100']/mx:subfield[@tag = 'd']">
-			<xsl:call-template name="z200_vie_mort"> </xsl:call-template>
+				<xsl:call-template name="z200_vie_mort"> </xsl:call-template>
 			</xsl:if>
 		</xsl:if>
 
@@ -678,7 +694,7 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	
+
 	<xsl:template name="z200_vie_mort">
 		<xsl:variable name="AnneeVie">
 			<xsl:value-of
@@ -689,23 +705,27 @@
 				select="substring(//mx:datafield[@tag = '046']/mx:subfield[@code = 'g'], 1, 4)"/>
 		</xsl:variable>
 
-	<xsl:if test="$AnneeVie!='' or $AnneeMort!='' ">
-		<subfield code="f">
-			<xsl:choose>
-				<xsl:when test="$AnneeVie!=''"><xsl:value-of select="concat($AnneeVie,'-')"/></xsl:when>
-				<xsl:otherwise>....-</xsl:otherwise> 
-			</xsl:choose>
-			<xsl:choose>
-				<xsl:when test="$AnneeMort!=''"><xsl:value-of select="$AnneeMort"/></xsl:when>
-				<xsl:otherwise>....</xsl:otherwise> 
-			</xsl:choose>
-		</subfield>
-	</xsl:if>
-	
-	
-	
+		<xsl:if test="$AnneeVie != '' or $AnneeMort != ''">
+			<subfield code="f">
+				<xsl:choose>
+					<xsl:when test="$AnneeVie != ''">
+						<xsl:value-of select="concat($AnneeVie, '-')"/>
+					</xsl:when>
+					<xsl:otherwise>....-</xsl:otherwise>
+				</xsl:choose>
+				<xsl:choose>
+					<xsl:when test="$AnneeMort != ''">
+						<xsl:value-of select="$AnneeMort"/>
+					</xsl:when>
+					<xsl:otherwise>....</xsl:otherwise>
+				</xsl:choose>
+			</subfield>
+		</xsl:if>
+
+
+
 	</xsl:template>
-	
+
 	<xsl:template name="removeEndPuctuation">
 		<xsl:param name="text"/>
 		<xsl:choose>
@@ -759,6 +779,4 @@
 			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
-
-
 </xsl:stylesheet>
