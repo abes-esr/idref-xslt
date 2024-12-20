@@ -443,8 +443,9 @@
     -->
     <xsl:template name="typeAut">
         <xsl:param name="code"/>
-        <xsl:variable name="rolemap">;a=p;b=b;c=g;d=m;e=a;f=u;h=q;j=d;l=f;j=z</xsl:variable>
-        <xsl:variable name="rolemap">;a=p;b=b;c=g;d=m;e=a;f=u;h=q;l=f</xsl:variable>
+        <!--<xsl:variable name="rolemap">;a=p;b=b;c=g;d=m;e=a;f=u;h=q;j=d;l=f;j=z</xsl:variable>-->
+        <!-- ERM décembre 2024 correction chaîne de $rolemap : ";" final-->
+        <xsl:variable name="rolemap">;a=p;b=b;c=g;d=m;e=a;f=u;h=q;l=f;</xsl:variable>
         <xsl:variable name="z2XX">
             <xsl:value-of select="//mx:datafield[substring(@tag, 1, 1) = '2']/@tag"/>
         </xsl:variable>
