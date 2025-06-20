@@ -200,14 +200,20 @@
 			</xsl:if>
 
 
-			<!--Ajout FML -->
-			<!--	<xsl:for-each select="mx:controlfield[@tag = '001']">
-							<datafield tag="035" ind1="#" ind2="#">
-									<subfield code="a">
-										<xsl:value-of select="text()"/>
-									</subfield>
-									</datafield>
-						</xsl:for-each>-->
+			<!--Ajout FML juin 2025 -->
+			    <xsl:for-each select="mx:controlfield[@tag = '001']">
+			        <xsl:if test="contains(., 'RERO')">
+			            <datafield tag="035" ind1="#" ind2="#">
+			                <subfield code="a">
+			                    <xsl:value-of select="substring-after(., '|')"/>
+			                </subfield>
+			                <subfield code="2">
+			                    <xsl:text>RERO</xsl:text>
+			                </subfield>
+			            </datafield>
+			        </xsl:if>
+			    </xsl:for-each>
+			
 			<xsl:for-each select="mx:datafield[@tag = '667']">
 				<datafield tag="830" ind1="#" ind2="#">
 					<xsl:for-each select="mx:subfield[@code = 'a']">
@@ -245,20 +251,19 @@
 
 
 			<!--Ajout FML juillet 2024 -->
-			<xsl:for-each select="mx:datafield[@tag = '024']">
-				<xsl:if test="mx:datafield[@tag = '024'][mx:subfield[@code = '2'][text() = 'isni']]">
-					<datafield tag="010">
-						<subfield code="a">
-							<xsl:value-of
-								select="substring-after(mx:datafield[@tag = '024']/mx:subfield[@code = 'a'], 'https://isni.org/isni/')"
-							/>
-						</subfield>
-						<subfield code="2">
-							<xsl:value-of select="'ISNI'"/>
-						</subfield>
-					</datafield>
-				</xsl:if>
-			</xsl:for-each>
+			    <xsl:for-each select="mx:datafield[@tag = '024']">
+			        <xsl:if test="mx:subfield[@code = '2'][text() = 'isni']">
+			            <datafield tag="010">
+			                <subfield code="a">
+			                    <xsl:value-of
+			                        select="substring-after(mx:subfield[@code = 'a'], 'https://isni.org/isni/')"/>
+			                </subfield>
+			                <subfield code="2">
+			                    <xsl:text>ISNI</xsl:text>
+			                </subfield>
+			            </datafield>
+			        </xsl:if>
+			    </xsl:for-each>
 
 			<!--Ajout FML : l'idviaf venant du JAVA -->
 			<datafield ind1="#" ind2="#" tag="035">
