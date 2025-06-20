@@ -249,7 +249,7 @@
 				<datafield tag="010">
 					<subfield code="a">
 						<xsl:value-of
-							select="substring-after(mx:datafield[@tag = '024']/mx:subfield[@code = 'a'], 'http://www.isni.org/isni/')"
+							select="substring-after(mx:datafield[@tag = '024']/mx:subfield[@code = 'a'], 'https://www.isni.org/isni/')"
 						/>
 					</subfield>
 					<subfield code="2">
