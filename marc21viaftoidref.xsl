@@ -88,6 +88,7 @@
 									select="concat($recordLenght, $recordStatus, $recordType, '  ', $entityType, '22', $baseAddressOfData, $encodingLevel, '  45  ')"/>
 							</leader>
 						</xsl:for-each>-->
+			
 			<!--  <xsl:for-each select="mx:controlfield[@tag = '001']">
 							<controlfield tag="001">
 								<xsl:value-of select="text()"/>
@@ -107,6 +108,7 @@
 					</subfield>
 				</datafield>
 			</xsl:if>
+			
 			<!--Ajout FML mai 2024 : traitement des Collectivités -->
 
 			<xsl:if test="mx:datafield[@tag = '110']">
@@ -163,6 +165,81 @@
 			</xsl:if>
 
 			<!-- FIN traitement des Collectivités -->
+
+		   <!--Ajout FML juin 2025 : traitement des Congrès -->
+		    <xsl:if test="mx:datafield[@tag = '111']">
+		        <datafield tag="008">
+		            <subfield code="a">
+		                <xsl:value-of select="'Tb5'"/>
+		            </subfield>
+		        </datafield>
+		    </xsl:if>
+		    
+		    <xsl:for-each select="mx:datafield[@tag = '111']">
+		        <datafield tag="210" ind1="1" ind2="#">
+		            <subfield code="a">
+		                <xsl:value-of select="concat('@', mx:subfield[@code = 'a'])"/>
+		            </subfield>
+		            <xsl:if test="mx:subfield[@code = 'e']">
+		                <subfield code="b">
+		                    <xsl:value-of select="mx:subfield[@code = 'e']"/>
+		                </subfield>
+		            </xsl:if>
+		            <xsl:if test="mx:subfield[@code = 'n']">
+		                <subfield code="d">
+		                    <xsl:value-of select="mx:subfield[@code = 'n']"/>
+		                </subfield>
+		            </xsl:if>
+		            <xsl:if test="mx:subfield[@code = 'c']">
+		                <subfield code="e">
+		                    <xsl:value-of select="mx:subfield[@code = 'c']"/>
+		                </subfield>
+		            </xsl:if>
+		            <xsl:if test="mx:subfield[@code = 'd']">
+		                <subfield code="f">
+		                    <xsl:value-of select="mx:subfield[@code = 'd']"/>
+		                </subfield>
+		            </xsl:if>
+		        </datafield>
+		    </xsl:for-each>
+		    
+		    <xsl:if test="mx:datafield[@tag = '411']">
+		        <xsl:for-each select="mx:datafield[@tag = '411']">
+		            <datafield tag="410" ind1="0" ind2="#">
+		                <xsl:for-each select="mx:subfield[@code = 'w']">
+		                    <subfield code="5">
+		                        <xsl:value-of select="text()"/>
+		                    </subfield>
+		                </xsl:for-each>
+		                <xsl:for-each select="mx:subfield[@code = 'a']">
+		                    <subfield code="a">
+		                        <xsl:value-of select="concat('@', text())"/>
+		                    </subfield>
+		                </xsl:for-each>
+		                <xsl:for-each select="mx:subfield[@code = 'e']">
+		                    <subfield code="b">
+		                        <xsl:value-of select="text()"/>
+		                    </subfield>
+		                </xsl:for-each>
+		                <xsl:for-each select="mx:subfield[@code = 'n']">
+		                    <subfield code="d">
+		                        <xsl:value-of select="text()"/>
+		                    </subfield>
+		                </xsl:for-each>
+		                <xsl:for-each select="mx:subfield[@code = 'c']">
+		                    <subfield code="e">
+		                        <xsl:value-of select="text()"/>
+		                    </subfield>
+		                </xsl:for-each>
+		                <xsl:for-each select="mx:subfield[@code = 'd']">
+		                    <subfield code="f">
+		                        <xsl:value-of select="text()"/>
+		                    </subfield>
+		                </xsl:for-each>
+		            </datafield>
+		        </xsl:for-each>
+		    </xsl:if>
+		    <!-- FIN traitement des Congrès -->
 
 			<!--Ajout FML automne 2023 : traitement des Lieux Géographiques -->
 
