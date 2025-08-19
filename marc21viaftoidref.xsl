@@ -845,6 +845,9 @@
 					<subfield>
 						<xsl:attribute name="code">
 							<xsl:choose>
+								<xsl:when test="@code = 'u'">
+									<xsl:value-of select="u"/>
+								</xsl:when>
 								<xsl:when test="@code = '3'">
 									<xsl:value-of select="2"/>
 								</xsl:when>
@@ -854,9 +857,13 @@
 								<xsl:when test="@code = 'y'">
 									<xsl:value-of select="2"/>
 								</xsl:when>
+								<xsl:otherwise/>
+
+								<!--
 								<xsl:otherwise>
 									<xsl:value-of select="@code"/>
-								</xsl:otherwise>
+								</xsl:otherwise> -->
+								
 							</xsl:choose>
 						</xsl:attribute>
 						<xsl:value-of select="text()"/>
@@ -878,3 +885,4 @@
 		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>
+
