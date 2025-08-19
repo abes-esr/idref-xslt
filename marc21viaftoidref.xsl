@@ -819,9 +819,6 @@
 				</xsl:choose>
 			</subfield>
 		</xsl:if>
-
-
-
 	</xsl:template>
 
 	<xsl:template name="removeEndPuctuation">
@@ -838,6 +835,35 @@
 		</xsl:choose>
 	</xsl:template>
 
+	
+	<xsl:template name="datafield856">
+		<xsl:for-each select="mx:datafield[@tag = 856]">
+			<datafield tag="856" ind1="#" ind2="#">
+				<xsl:for-each select="mx:subfield[@code = 'u']">
+					<subfield code="u">
+						<xsl:value-of select="text()"/>
+					</subfield>
+				</xsl:for-each>
+				<xsl:for-each select="mx:subfield[@code = '3']">
+					<subfield code="2">
+						<xsl:value-of select="text()"/>
+					</subfield>
+				</xsl:for-each>
+				<xsl:for-each select="mx:subfield[@code = '2']">
+					<subfield code="y">
+						<xsl:value-of select="text()"/>
+					</subfield>
+				</xsl:for-each>
+				<xsl:for-each select="mx:subfield[@code = 'y']">
+					<subfield code="2">
+						<xsl:value-of select="text()"/>
+					</subfield>
+				</xsl:for-each>
+			</datafield>
+		</xsl:for-each>
+	</xsl:template>
+
+	<!--   FML août 2025 : voir template ci-dessus
 	<xsl:template name="datafield856">
 		<xsl:for-each select="mx:datafield[@tag = 856]">
 			<datafield tag="856" ind1="#" ind2="#">
@@ -856,14 +882,10 @@
 								</xsl:when>
 								<xsl:when test="@code = 'y'">
 									<xsl:value-of select="2"/>
-								</xsl:when>
-								<xsl:otherwise/>
-
-								<!--
+								</xsl:when>						
 								<xsl:otherwise>
 									<xsl:value-of select="@code"/>
-								</xsl:otherwise> -->
-								
+								</xsl:otherwise>								
 							</xsl:choose>
 						</xsl:attribute>
 						<xsl:value-of select="text()"/>
@@ -871,7 +893,7 @@
 				</xsl:for-each>
 			</datafield>
 		</xsl:for-each>
-	</xsl:template>
+	</xsl:template> -->
 
 	<xsl:template name="getCountryFromMarcOrgCode">
 		<xsl:param name="marcOrgCode" select="text()"/>
@@ -885,4 +907,5 @@
 		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>
+
 
