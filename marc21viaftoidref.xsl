@@ -401,7 +401,22 @@
 							</datafield>
 						</xsl:for-each>-->
 
-
+		    <!--Ajout FML mars 2026 : récupération du genre -->
+		    <xsl:if test="mx:datafield[@tag = '375']/mx:subfield[@code = '2'][text() = 'iso5218']">
+		        <datafield tag="120" ind1="#" ind2="#">
+		            <xsl:if test="mx:datafield[@tag = '375']/mx:subfield[@code = 'a'][text() = '1']">		
+		            <subfield code="a">
+		                <xsl:value-of select="'ba'"/>
+		            </subfield>
+		            </xsl:if>
+		            <xsl:if test="mx:datafield[@tag = '375']/mx:subfield[@code = 'a'][text() = '2']">		
+		                <subfield code="a">
+		                    <xsl:value-of select="'aa'"/>
+		                </subfield>
+		            </xsl:if>
+		        </datafield>
+		    </xsl:if>
+			
 			<!--	Ajout FML-->
 			<xsl:if test="mx:datafield[@tag = '100']">
 				<datafield ind1="#" ind2="#" tag="106">
@@ -545,6 +560,30 @@
 					</xsl:choose>
 				</datafield>
 			</xsl:for-each>
+
+	 <!--Ajout FML mars 2026 : récupération de note -->
+			<xsl:if test="mx:datafield[@tag = '678']/mx:subfield[@code = 'a']">
+		        <xsl:for-each select="mx:datafield[@tag = '678']/mx:subfield[@code = 'a']">
+		        <datafield tag="340" ind1="#" ind2="#">
+		                <subfield code="a">
+		                    <xsl:value-of select="text()"/>
+		                </subfield>
+		        </datafield>
+		    </xsl:for-each>
+		    </xsl:if>
+		    
+		    <xsl:if test="mx:datafield[@tag = '678']/mx:subfield[@code = 'b']">
+		        <xsl:for-each select="mx:datafield[@tag = '678']/mx:subfield[@code = 'b']">
+		        <datafield tag="340" ind1="#" ind2="#">
+		                <subfield code="a">
+		                    <xsl:value-of select="text()"/>
+		                </subfield>
+		        </datafield>
+		    </xsl:for-each>
+		    </xsl:if>
+
+
+			
 			<!-- <xsl:for-each select="mx:datafield[@tag = '040']">
 							<xsl:for-each select="mx:subfield[@code = 'a']">
 								<datafield tag="801" ind1=" " ind2="0">
