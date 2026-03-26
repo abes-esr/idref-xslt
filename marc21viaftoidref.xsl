@@ -844,18 +844,8 @@
 						<xsl:value-of select="text()"/>
 					</subfield>
 				</xsl:for-each>
-				<xsl:for-each select="mx:subfield[@code = '3']">
-					<subfield code="2">
-						<xsl:value-of select="text()"/>
-					</subfield>
-				</xsl:for-each>
 				<xsl:for-each select="mx:subfield[@code = '2']">
 					<subfield code="y">
-						<xsl:value-of select="text()"/>
-					</subfield>
-				</xsl:for-each>
-				<xsl:for-each select="mx:subfield[@code = 'y']">
-					<subfield code="2">
 						<xsl:value-of select="text()"/>
 					</subfield>
 				</xsl:for-each>
