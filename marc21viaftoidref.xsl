@@ -406,12 +406,12 @@
 		        <datafield tag="120" ind1="#" ind2="#">
 		            <xsl:if test="mx:datafield[@tag = '375']/mx:subfield[@code = 'a'][text() = '1']">		
 		            <subfield code="a">
-		                <xsl:value-of select="'ba'"/>
+		                <xsl:value-of select="'b'"/>
 		            </subfield>
 		            </xsl:if>
 		            <xsl:if test="mx:datafield[@tag = '375']/mx:subfield[@code = 'a'][text() = '2']">		
 		                <subfield code="a">
-		                    <xsl:value-of select="'aa'"/>
+		                    <xsl:value-of select="'a'"/>
 		                </subfield>
 		            </xsl:if>
 		        </datafield>
