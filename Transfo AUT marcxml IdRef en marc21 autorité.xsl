@@ -1,4 +1,5 @@
-<xsl:stylesheet version="1" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:m21="http://www.loc.gov/MARC21/slim">
     <xsl:output encoding="UTF-8" indent="yes" method="xml" omit-xml-declaration="yes"/>
     <xsl:strip-space elements="*"/>
     <!--
@@ -6,57 +7,64 @@
   Based upon http://www.loc.gov/marc/unimarctomarc21.html
     -->
     <!--
-       ERM le 25/06/20 
-        * déclaration XSL : ajout de l'attribut omit-xml-declaration="yes" pour ne pas écrire le prologue XML <?xml version="1.0" encoding="UTF-8"?> en sortie puisque le protocole OAI l'intègre déjà 
+       ERM le 25/06/20
+        * déclaration XSL : ajout de l'attribut omit-xml-declaration="yes" pour ne pas écrire le prologue XML <?xml version="1.0" encoding="UTF-8"?> en sortie puisque le protocole OAI l'intègre déjà
         * mise en ordre des zones via variables
         * identifiants 010, 033 et 035 sous-zones $2 en lowercase
-        
+
          ERM le 01/07 + AJO  06/07
-         * 801 (+152) -> 040      
-         
+         * 801 (+152) -> 040
+
          ERM /AJO
-         * bloc des point d'accès autorisé 
-         - 200 / 220 / 240 
-         - 210  
+         * bloc des points d'accès autorisés
+         - 200 / 220 / 240
+         - 210
          - 215
          - 230
          - AJO 250
          - AJO 280
-         
+
          ERM / AJO
          * bloc des variantes de points d'accès
-         - 400 / 420 / 440 
+         - 400 / 420 / 440
          - 410
          - 415
          - 430
          - AJO 450
          - AJO 480
-          
+
          ERM / AJO
          * bloc des points d'accès en relation
           - 500 / 520 / 540
           - 510
           - AJO 515 / 550 / 580
-         
+
          ERM / AJO
          * bloc des points d'accès autorisés parallèles
-         - 700 / 720 / 740 
+         - 700 / 720 / 740
          - 710
          - 715
          - 730
          - AJO 750
          - AJO 780
-              
+
          AJO 20/07 : correction traitement sous-zones 3XX pour supprimer $6$7, ajouté 898
-                      correction dans template copy-indicators  
-                      
+                      correction dans template copy-indicators
+
          ERM 13/08/20  correction date de création de la notice
          Unimarc z100 -> MARC21 z008
          <xsl:variable name="dest00-05" select="substring($source100, 2, 6)"/>
           corrigé en
          <xsl:variable name="dest00-05" select="substring($source100, 3, 6)"/>
-  
-       -->
+
+         ACT 01/03/21  ajout de la 006 et 007 en 039
+         Et ajout des PPN des notices fusionnées en 035$z
+
+
+         ERM 20/09/21 : désambiguïsation des noms de variables utilisés également comme nom de paramètre :
+             * variable date_szf renommée Vdate_szf  pour passer dans le paramètre date_szf
+             * variable z2XX_liee renommée Vz2XX_liee pour passer dans le paramètre z2XX_liee -->
+
     <xsl:variable name="all-codes">abcdefghijklmnopqrstuvwxyz123456789</xsl:variable>
     <xsl:variable name="smallcase">
         <xsl:text>abcdefghijklmnopqrstuvwxyz</xsl:text>
@@ -64,6 +72,11 @@
     <xsl:variable name="uppercase">
         <xsl:text>ABCDEFGHIJKLMNOPQRSTUVWXYZ</xsl:text>
     </xsl:variable>
+    <!--ERM décembre 2024 pour z822_75X-->
+    <xsl:variable name="type_notice">
+        <xsl:value-of select="substring(//leader, 10, 1)"/>
+    </xsl:variable>
+
     <xsl:key match="datafield[@tag = '200']" name="key200" use="@tag"/>
     <xsl:key match="datafield[@tag = '210' and @ind1 = '0']" name="key210" use="@tag"/>
     <xsl:key match="datafield[@tag = '210' and @ind1 = '1']" name="key211" use="@tag"/>
@@ -102,7 +115,7 @@
                            <xsl:with-param name="srcTag">015</xsl:with-param>
                            <xsl:with-param name="dstTag">024</xsl:with-param>
              <!-\- pour les indicateurs (ind0 = rien, ind1 = 7), voir template  copy-indicators
-                     $2 ISADN sera là de facto  -\-> 
+                     $2 ISADN sera là de facto  -\->
                </xsl:call-template> -->
                 <!-- 033->024 -->
                 <xsl:call-template name="transform-datafield">
@@ -113,28 +126,99 @@
                     <!--     , voir template  copy-indicators pour : ind0 = rien, ind1 = 7  -->
                 </xsl:call-template>
                 <!-- 035->035 -->
-                <xsl:call-template name="transform-datafield">
+                <!--xsl:call-template name="transform-datafield">
                     <xsl:with-param name="srcTag">035</xsl:with-param>
                     <xsl:with-param name="dstTag">035</xsl:with-param>
                     <xsl:with-param name="srcCodes">az</xsl:with-param>
                     <xsl:with-param name="dstCodes">az</xsl:with-param>
-                </xsl:call-template>
+                </xsl:call-template-->
+
+                <!-- 01/03/21 : FML et ACT : ajout des PPN de notices fusionnées en 035$z -->
+                <!--<xsl:for-each select="datafield[@tag = '035']">
+                    <datafield ind1=" " ind2=" " tag="035">
+                        <xsl:choose>
+                            <xsl:when test="subfield[@code='9']='sudoc'">
+                                <subfield code="z"><xsl:value-of select="concat('(IDREF)', subfield[@code='a'])"/></subfield>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:if test="subfield[@code = 'a']">
+                                    <subfield code="a"><xsl:value-of select="subfield[@code = 'a']"/></subfield>
+                                </xsl:if>
+                                <xsl:if test="subfield[@code = 'z']">
+                                    <subfield code="z"><xsl:value-of select="subfield[@code = 'z']"/></subfield>
+                                </xsl:if>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </datafield>
+                </xsl:for-each>-->
+
+                <!--FML ajout d'une variante à destination de SLSP dans le cas 035$2RERO -->
+                <!--<xsl:for-each select="datafield[@tag = '035']/subfield[@code='2'][contains(., 'RERO')]">
+                    <datafield ind1=" " ind2=" " tag="035" >
+                        <subfield code="a">
+                            <xsl:value-of select="concat('(RERO)', ../subfield[@code='a'])"/>
+                        </subfield>
+                    </datafield>
+                </xsl:for-each>-->
+
                 <!--FML ajout d'une 035 générée à partir de la zone 001-->
                 <datafield ind1=" " ind2=" " tag="035">
                     <subfield code="a">
                         <xsl:value-of select="concat('(IDREF)', $z001)"/>
                     </subfield>
                 </datafield>
-                <!--FML ajout d'une variante à destination de SLSP dans le cas 035$2RERO -->
-                <xsl:for-each select="datafield[@tag = '035']/subfield[@code='2'][contains(., 'RERO')]">
-                    <xsl:if test="contains(., 'RERO')">
-                        <datafield tag="035" ind1=" " ind2=" ">
+
+                <!--FML optimisation traitement des 035-->
+                <xsl:for-each select="datafield[@tag = '035']">
+                    <xsl:variable name="subfield_a" select="subfield[@code = 'a']"/>
+                    <xsl:variable name="subfield_9" select="subfield[@code = '9']"/>
+                    <xsl:variable name="contains_rero"
+                        select="subfield[@code = '2'][text() = 'RERO']"/>
+
+                    <!-- Premier datafield traité normalement -->
+                    <datafield ind1=" " ind2=" " tag="035">
+                        <xsl:choose>
+                            <!-- Si subfield[@code='9'] est égal à 'sudoc' -->
+                            <xsl:when test="$subfield_9 = 'sudoc'">
+                                <subfield code="z">
+                                    <xsl:value-of select="concat('(IDREF)', $subfield_a)"/>
+                                </subfield>
+                            </xsl:when>
+                            <!-- Sinon, on garde les subfields 'a' et 'z' existants -->
+                            <xsl:otherwise>
+                                <xsl:if test="$subfield_a">
+                                    <subfield code="a">
+                                        <xsl:value-of select="$subfield_a"/>
+                                    </subfield>
+                                </xsl:if>
+                                <xsl:if test="subfield[@code = 'z']">
+                                    <subfield code="z">
+                                        <xsl:value-of select="subfield[@code = 'z']"/>
+                                    </subfield>
+                                </xsl:if>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </datafield>
+
+                    <!-- Nouveau datafield si $contains_rero est vrai -->
+                    <xsl:if test="$contains_rero">
+                        <datafield ind1=" " ind2=" " tag="035">
                             <subfield code="a">
-                                <xsl:value-of select="concat('(RERO)', ../subfield[@code='a'])"/>
+                                <xsl:value-of select="concat('(RERO)', $subfield_a)"/>
                             </subfield>
                         </datafield>
                     </xsl:if>
-                </xsl:for-each> 
+                </xsl:for-each>
+                
+                <!--FML ajout d'une 039 générée à partir de la zone 006-->
+                <datafield ind1=" " ind2=" " tag="039">
+                    <subfield code="a">
+                        <xsl:value-of select="controlfield[@tag = '006']"/>
+                    </subfield>
+                    <subfield code="b">
+                        <xsl:value-of select="controlfield[@tag = '007']"/>
+                    </subfield>
+                </datafield>
                 <!-- Bloc 1XX -->
                 <!-- 100->008 : OK voir transform008-->
                 <!-- 101->377   (précision : code de langue MARC : est-ce un souci ?)-->
@@ -159,7 +243,7 @@
                     <xsl:with-param name="srcCodes">abcd</xsl:with-param>
                     <xsl:with-param name="dstCodes">fgst</xsl:with-param>
                 </xsl:call-template>
-                <!-- 120->375 
+                <!-- 120->375
                         mais il faut décoder en toutes lettres : a -> féminin ; b -> masculin  : exemple $a féminin  -->
                 <!--AJO rem: seulement pos. 0; pos 1 va en 008/32-->
                 <!--  <xsl:call-template name="transform-datafield">
@@ -183,18 +267,18 @@
                 </xsl:call-template>
                 <!-- 180 pas d'équivalent -->
                 <!-- Bloc des points d'accès 2XX -->
-                <!-- 
-                    200 ->100 |  220 ->100 | 240 ->100 
-                    215 -> 151 
-                    210 @ind1=0 -> 110 ou  210 @ind1=1  -> 211 
-                    230 -> 130 
+                <!--
+                    200 ->100 |  220 ->100 | 240 ->100
+                    215 -> 151
+                    210 @ind1=0 -> 110 ou  210 @ind1=1  -> 211
+                    230 -> 130
                     250 -> 150
-                    280 -> 155 
+                    280 -> 155
                 -->
                 <!-- mécanisme : appel du template Z_INTER_2XX qui permet de compter les zones 2XX et les $7 [substring(text(), 5, 2) = 'ba'] afin d'orienter (template Z_PT_ACCES_XXX ) vers la bonne zone marc21  :
                     * 1XX pour les zones retenues : $7 [substring(text(), 5, 2) = 'ba']
                     * 7XX pour les "retoquées"
-                    => ce template permet d'alimenter les paramètres :  "position" / "nb2XX" / "nbsz7_ba" utiliseés par le template Z_PT_ACCES_XXX qui construit les zones 1XX / 7XX (natives et retoquées) / 4XX
+                    => ce template permet d'alimenter les paramètres :  "position" / "nb2XX" / "nbsz7_ba" utilisés par le template Z_PT_ACCES_XXX qui construit les zones 1XX / 7XX (natives et retoquées) / 4XX
                     -->
                 <xsl:for-each
                     select="datafield[@tag = '200'] | datafield[@tag = '210'] | datafield[@tag = '215'] | datafield[@tag = '220'] | datafield[@tag = '230'] | datafield[@tag = '240'] | datafield[@tag = '250'] | datafield[@tag = '280']">
@@ -362,7 +446,7 @@
                 <!-- Bloc des 7XX -->
                 <!-- 700 / 720 / 740 ->700 -->
                 <!--  appel du template Z_PT_ACCES_2or400_20_40 avec les variables qui permettent :
-                - de déterminer la zone de destination 
+                - de déterminer la zone de destination
                 - de construire les zones 100 / 700 (natives et retoquées) / 400
                 -->
                 <xsl:for-each
@@ -421,7 +505,7 @@
                 </xsl:for-each>
                 <!-- Bloc des 8XX -->
                 <!-- 801->040 : template particulier  -->
-                <!--ERM le 01/07 + AJO (06.07)                               
+                <!--ERM le 01/07 + AJO (06.07)
                 adjonctions pour un fonctionnement correcte de la transformation de 152 $b + 801 (plusieurs zones) en 040 (une seule zone)-->
                 <!--AJO 06/07: ajouté @ind2=3, sinon pas de 040 dans ce cas -->
                 <!--AJO 08/07: ajouté @ind2=#, sinon pas de 040 dans ce cas (utilisé à la place de 0)-->
@@ -479,6 +563,8 @@
                     <xsl:with-param name="srcTag">822</xsl:with-param>
                     <xsl:with-param name="dstTag">680</xsl:with-param>
                 </xsl:call-template>
+                <!-- ERM décembre 2024 ajout de z822_75X fondé sur 822 et $type_notice-->
+                <xsl:call-template name="z822_75X"/>
                 <!-- 825->681 -->
                 <!-- 825    AJO 19/06/20 utilisation du champ prévu dans MARC21: 681 $i détails voir concordance principale-->
                 <!--AJO modif 19/06/20 : la zone correcte 681, également utilisée pour VIAF-->
@@ -529,13 +615,26 @@
         <!--ERM le 25/06/20-->
         <!-- arbre2 : variable qui contient la copie ordonnée des zones de arbre1-->
         <xsl:variable name="arbre2">
-            <record>
+            <!-- ERM 07/02/2025 ajout de la déclaration de l'espace de nom + prefixe m21: et de la référence au schema de validation MARC21slim.xsd -->
+            <m21:record xmlns:m21="http://www.loc.gov/MARC21/slim"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd"  
+                type="Authority">
                 <xsl:for-each select="common:node-set($arbre1)/record/*"
-                    xmlns:common="http://exslt.org/common">
+                    xmlns:common="http://exslt.org/common" xmlns:m21="http://www.loc.gov/MARC21/slim">
                     <xsl:sort select="@tag"/>
-                    <xsl:copy-of select="."/>
+                    <!-- ERM 07/02/2025 ajout du prefixe--> 
+                    <!--<xsl:copy-of select="."/>-->
+                    <xsl:element name="m21:{local-name()}">
+                        <xsl:copy-of select="@* | text()"/>
+                        <xsl:for-each select="*">
+                            <xsl:element name="m21:{local-name()}">
+                                <xsl:copy-of select="@* | text()"/>
+                            </xsl:element>
+                        </xsl:for-each>                        
+                    </xsl:element>
                 </xsl:for-each>
-            </record>
+            </m21:record>
         </xsl:variable>
         <!--ERM le 25/06/20 -->
         <!-- permet d'écrire le résultat-->
@@ -589,6 +688,8 @@
         </xsl:for-each>
     </xsl:template>
     <xsl:template name="transform-008">
+        <!-- ERM janvier 2025 pour mapping Tz vers c en pos. 17-->
+        <xsl:variable name="source008" select="controlfield[@tag = '008']"/>
         <xsl:variable name="source100" select="datafield[@tag = '100']/subfield[@code = 'a']"/>
         <xsl:variable name="source106" select="datafield[@tag = '106']"/>
         <xsl:variable name="source120" select="datafield[@tag = '120']/subfield[@code = 'a']"/>
@@ -609,7 +710,9 @@
             </xsl:choose>
         </xsl:variable>
         <!--AJO modif 14/04/20 : | (pas de blanc dans cette pos.) -->
-        <xsl:variable name="dest07" select="'|'"> </xsl:variable>
+        <xsl:variable name="dest07">
+            <xsl:value-of select="'|'"/>
+        </xsl:variable>
         <xsl:variable name="dest08">
             <xsl:choose>
                 <xsl:when test="substring($source100, 10, 3) = 'fre'">
@@ -634,7 +737,9 @@
         </xsl:variable>
         <!--AJO modif 14/04/20 : ||||| (pas de blanc dans cette pos.) -->
         <!--AJO modif 19/06/20 : zz||| (valeurs par défaut pour règles, pos. 10-11: zz) -->
-        <xsl:variable name="dest10-14" select="'zz|||'"> </xsl:variable>
+        <xsl:variable name="dest10-14">
+            <xsl:value-of select="'zz|||'"/>
+        </xsl:variable>
         <xsl:variable name="dest15">
             <xsl:choose>
                 <xsl:when test="$source106/subfield[@code = 'a'] != ''">
@@ -648,8 +753,16 @@
             </xsl:choose>
         </xsl:variable>
         <!--AJO modif 14/04/20 dest16-31: 16 pos., pas 15; pos. 16, 17, 28, 29, 31: | (pas de blanc dans ces pos.)-->
+        <!-- ERM janvier 2025 pour mapping Tz vers c en pos. 17-->
         <xsl:variable name="dest16-31">
-            <xsl:text>||          || |</xsl:text>
+            <xsl:choose>
+                <xsl:when test="substring($source008, 2, 1) = 'z'">
+                    <xsl:text>|c          || |</xsl:text>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:text>||          || |</xsl:text>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:variable>
         <xsl:variable name="dest32">
             <xsl:choose>
@@ -741,20 +854,20 @@
     ? => élément facultatif et unique
     * => élément facultatif et répétable
     + => élément obligatoire et répétable
-    
-    [] séquence 
+
+    [] séquence
     [] ? => séquence facultative et unique
     [] * => séquence facultative et répétable
     [] + => séquence obligatoire et répétable
      -->
     <!-- Quelle 200 ->100 |  220 ->100 | 240 ->100 | 215 -> 151 |
-        ERM : 09/07/20 : 
-                    mécanisme : 
-                    Ce template est un template intermédiaire qui permet de compter les zones 2XX = variable nb2XX  (en les regroupant par @tag) et les $7 [substring(text(), 5, 2) = 'ba'] = variable nbsz7_ba 
+        ERM : 09/07/20 :
+                    mécanisme :
+                    Ce template est un template intermédiaire qui permet de compter les zones 2XX = variable nb2XX  (en les regroupant par @tag) et les $7 [substring(text(), 5, 2) = 'ba'] = variable nbsz7_ba
                     afin que le template Z_PT_ACCES_XXX oriente ces 2XX vers la bonne zone marc21  :
                     * 1XX pour les 2XX retenues : $7 [substring(text(), 5, 2) = 'ba']
                     * 7XX pour les "retoquées"
-                    => ce template permet d'alimenter les paramètres :  "position" / "nb2XX" / "nbsz7_ba" utilisés par le template Z_PT_ACCES_XXX.                   
+                    => ce template permet d'alimenter les paramètres :  "position" / "nb2XX" / "nbsz7_ba" utilisés par le template Z_PT_ACCES_XXX.
                    -->
     <xsl:template name="Z_INTER_2XX">
         <xsl:param name="srcTag"/>
@@ -764,21 +877,21 @@
             <xsl:variable name="nb2XX" select="count($group2XX)"/>
             <xsl:variable name="nbsz7_ba"
                 select="count($group2XX/subfield[@code = '7'][substring(text(), 5, 2) = 'ba'])"/>
-            <!--  appel des templates en fonction de  $srcTag 
+            <!--  appel des templates en fonction de  $srcTag
                 * Z_PT_ACCES_2or4or700_20_40 avec les variables qui permettent :
-                - de déterminer la zone de destination 
+                - de déterminer la zone de destination
                 - de construire les zones 100 / 700 (natives et retoquées) / 400
                   * Z_PT_ACCES_2or4or710_11  avec les variables qui permettent :
-                  - de déterminer la zone de destination 
+                  - de déterminer la zone de destination
                   - de construire les zones 110 ou 111 / 710 ou 711  (natives et retoquées) / 410 ou 411
                 * Z_PT_ACCES_215_415_715
-                  - de déterminer la zone de destination 
+                  - de déterminer la zone de destination
                   - de construire les zones 151 / 751 (natives et retoquées) / 451
                   * Z_PT_ACCES_230_430_730
-                  - de déterminer la zone de destination 
+                  - de déterminer la zone de destination
                   - de construire les zones 130 / 730 (natives et retoquées) / 430
                   * Z_PT_ACCES_250_450_750
-                  - de déterminer la zone de destination 
+                  - de déterminer la zone de destination
                 -->
             <xsl:for-each select="$group2XX/.">
                 <xsl:choose>
@@ -849,10 +962,10 @@
         <xsl:variable name="sz7_pos5-6" select="substring(subfield[@code = '7'], 5, 2)"/>
         <!-- ERM : algo qui permet de déterminer pour les 2XX / 7XX / 4XX quelle est la zone de destination marc21
             * quelle 2XX > 100 ?
-            * quelle 2XX > 700 = les 2XX retoquées 
-            * 7XX natives > 700 
+            * quelle 2XX > 700 = les 2XX retoquées
+            * 7XX natives > 700
             * 4XX > 400
-              
+
         algo quelle 2XX > 100 ?
             - si $nb2XX = 1 -> 100
             - si $nb2XX > 1
@@ -1024,11 +1137,11 @@
             <!-- $x / $y / $z  -->
             <!--template sous-zones : $x$y$z-->
             <xsl:call-template name="SZ_xyz"/>
-            <!--template sous-zones SZ_w4i : 
-           pour les 7XX (retoquée) $4 = paaenl  
+            <!--template sous-zones SZ_w4i :
+           pour les 7XX (retoquée) $4 = paaenl
             +
-            pour 7XX natives / 4XX / 5XX : si $5 unimarc 
-                        == > $w = r  
+            pour 7XX natives / 4XX / 5XX : si $5 unimarc
+                        == > $w = r
                                   $4 = $5
                                   $i =  $5 décodée
             +
@@ -1040,31 +1153,34 @@
             </xsl:call-template>
         </datafield>
         <!-- ERM le 09/07/20 : AUTO-RAPPEL de  Z_PT_ACCES_2or400_20_40 pour traiter les 4XX
-                   AU MOMENT DE LA CREATION DE LA  2XX -> 100  :            
-                * création de la variable date_szf 
+                   AU MOMENT DE LA CREATION DE LA  2XX -> 100  :
+                * création de la variable date_szf
                    si point départ pour les 4XX est la 200 -> 100 : alimentation avec 200$f au cas où la 400 traitée par Z_PT_ACCES_2or400_20_40 n'en aurait pas => z2XX_liee = 200
                 ou
                    si point départ pour les 4XX est la 220 -> 100 : alimentation avec 220$f au cas où la 420 traitée par Z_PT_ACCES_2or400_20_40 n'en aurait pas => z2XX_liee = 220
-                ou 
+                ou
                  si point départ pour les 4XX est la 240 -> 100 : la variable  date_szf est vide
-                
+
                 * appel du template Z_PT_ACCES_2or400_20_40 avec les paramètres :
                 - srcTag = @tag soit 400 ou 420 ou 440
-                - type ="'400'"  qui permet de déterminer $dstTag = 400     
+                - type ="'400'"  qui permet de déterminer $dstTag = 400
                 - date_szf qui vaut si 200$f ou 220$f (rien en cas de 240)
                 - z2XX_liee qui vaut 200 ou 220 ou 240
                 -->
+        <!-- ERM 20/09/21 : désambiguïsation des noms de variables utilisés également comme nom de paramètre :
+             * variable date_szf renommée Vdate_szf  pour passer dans le paramètre date_szf
+             * variable z2XX_liee renommée Vz2XX_liee pour passer dans le paramètre z2XX_liee -->
         <xsl:if test="$dstTag = '100'">
-            <xsl:variable name="date_szf" select="subfield[@code = 'f']"/>
-            <xsl:variable name="z2XX_liee" select="@tag"/>
+            <xsl:variable name="Vdate_szf" select="subfield[@code = 'f']"/>
+            <xsl:variable name="Vz2XX_liee" select="@tag"/>
             <!-- 400 <= 400 / 420 / 440 -->
             <xsl:for-each
                 select="//datafield[@tag = '400'] | //datafield[@tag = '420'] | //datafield[@tag = '440']">
                 <xsl:call-template name="Z_PT_ACCES_2or4or700_20_40">
                     <xsl:with-param name="srcTag" select="@tag"/>
                     <xsl:with-param name="type" select="'400'"/>
-                    <xsl:with-param name="date_szf" select="$date_szf"/>
-                    <xsl:with-param name="z2XX_liee" select="$z2XX_liee"/>
+                    <xsl:with-param name="date_szf" select="$Vdate_szf"/>
+                    <xsl:with-param name="z2XX_liee" select="$Vz2XX_liee"/>
                 </xsl:call-template>
             </xsl:for-each>
         </xsl:if>
@@ -1148,55 +1264,48 @@
             </xsl:choose>
         </xsl:variable>
         <!-- construction de ind2 via une variable $destInd2-->
+        <!-- ERM janvier 2025 + octobre 2025  https://github.com/abes-esr/idref-xslt/issues/13-->
         <xsl:variable name="destInd2" select="' '"/>
         <datafield ind1="{$destInd1}" ind2="{$destInd2}" tag="{$dstTag}">
-            <!-- $a <= 210$a / 410$a / 710$a -->
-            <xsl:if test="subfield[@code = 'a'] != ''">
-                <subfield code="a">
-                    <xsl:value-of select="subfield[@code = 'a']"/>
-                </subfield>
-            </xsl:if>
-            <!-- séquence unimarc répétable sans ordre pré-établi  ($b* | $c* | $d* | $e | $f)*  à rendre en marc21 avec les mêmes répétitions dans le même ordre
-                - uni $b ind1=0 * > m21 $b* X10  |   uni  $b ind1=1 * > m21 $e* X11
-                - uni   $c * > m21 $g*    
-                - uni   $d  * > m21 $n* 
-                - uni   $e   > m21 $c    
-                - uni   $f   > m21 $d 
+            <!--  uni 210$a$c1$c2 / 410$a$c1$c2 / 710$a$c1$c2  => m21 $a ($c1 ; $c2) X10 
+                - uni $b$c3$c4 ind1=0 * > m21 $b($c3 ; $c4)* X10  |   uni  $bc3$c4 ind1=1 * > m21 $e($c3 ; $c4)* X11
+            Appariement des sous-zones répétables $c dans les zones unimarc 210 / 410 / 710 
+            pour qu'elles soient correctement associées à la sous-zone $a ou $b précédente et mises entre parenthèses. 
+            marc-xml : $a$c1c4 $b$c2$c3  $b$c5$c6
+            =>marc 21 :  $a ($c1 ; c2)     +   $b/e ($c3 ; c4) +   $b/e ($c5 ; c6)
             -->
-            <xsl:for-each
-                select="subfield[@code = 'b'][text() != ''] | subfield[@code = 'c'][text() != ''] | subfield[@code = 'd'][text() != ''] | subfield[@code = 'e'][text() != ''] | subfield[@code = 'f'][text() != '']">
-                <xsl:choose>
-                    <xsl:when test="parent::node()/@ind1 = '0' and @code = 'b'">
-                        <subfield code="b">
-                            <xsl:value-of select="."/>
-                        </subfield>
-                    </xsl:when>
-                    <xsl:when test="parent::node()/@ind1 = '1' and @code = 'b'">
-                        <subfield code="e">
-                            <xsl:value-of select="."/>
-                        </subfield>
-                    </xsl:when>
-                    <xsl:when test="@code = 'c'">
-                        <subfield code="g">
-                            <xsl:value-of select="."/>
-                        </subfield>
-                    </xsl:when>
-                    <xsl:when test="@code = 'd'">
-                        <subfield code="n">
-                            <xsl:value-of select="."/>
-                        </subfield>
-                    </xsl:when>
-                    <xsl:when test="@code = 'e'">
-                        <subfield code="c">
-                            <xsl:value-of select="."/>
-                        </subfield>
-                    </xsl:when>
-                    <xsl:when test="@code = 'f'">
-                        <subfield code="d">
-                            <xsl:value-of select="."/>
-                        </subfield>
-                    </xsl:when>
-                </xsl:choose>
+            <xsl:for-each select="subfield[text() != '']">
+                <xsl:variable name="pos" select="position()"/>
+                <xsl:variable name="code_dep" select="@code"/>
+                <xsl:variable name="code_dest">
+                    <xsl:choose>
+                        <xsl:when test="@code = 'c'"/>
+                        <xsl:when test="@code = 'a'">a</xsl:when>
+                        <xsl:when test="@code = 'b' and parent::node()/@ind1 = '0'">b</xsl:when>
+                        <xsl:when test="@code = 'b' and parent::node()/@ind1 = '1'">e</xsl:when>
+                        <xsl:when test="@code = 'd'">n</xsl:when>
+                        <xsl:when test="@code = 'e'">c</xsl:when>
+                        <xsl:when test="@code = 'f'">d</xsl:when>
+                    </xsl:choose>
+                    </xsl:variable>
+            <!--code dep  : <xsl:value-of select="$code_dep"></xsl:value-of>
+                code dest : <xsl:value-of select="$code_dest"></xsl:value-of>
+                valeur : <xsl:value-of select="."></xsl:value-of>
+                  position: <xsl:value-of select="$pos"/>-->
+
+                <xsl:for-each select="self::node()[@code = $code_dep and $code_dest != '']">
+                    <subfield code="{$code_dest}">
+                        <xsl:value-of select="."/>
+                        <xsl:if test="following-sibling::subfield[1][@code = 'c']">
+                            <xsl:text> (</xsl:text>
+                            <xsl:call-template name="Z_PT_ACCES_2or4or710_11_sz_c">
+                                <xsl:with-param name="code_dep" select="$code_dep"/>
+                                <xsl:with-param name="pos_code_dep" select="$pos"/>
+                            </xsl:call-template>
+                            <xsl:text>)</xsl:text>
+                        </xsl:if>
+                    </subfield>
+                </xsl:for-each>
             </xsl:for-each>
             <!--TODO-->
             <!-- uni   $g   > m21     -->
@@ -1219,6 +1328,31 @@
                 <xsl:with-param name="srcTag" select="$srcTag"/>
             </xsl:call-template>
         </datafield>
+    </xsl:template>
+    <xsl:template name="Z_PT_ACCES_2or4or710_11_sz_c">
+        <xsl:param name="code_dep"/>
+        <xsl:param name="pos_code_dep"/>
+        <xsl:variable name="pos_c">
+            <xsl:value-of select="$pos_code_dep + 1"/>
+        </xsl:variable>
+        <!--template : 
+       code dep  : <xsl:value-of select="$code_dep"></xsl:value-of>
+       pos_code_dep : <xsl:value-of select="$pos_code_dep"/>
+        pos_c : <xsl:value-of select="$pos_c"/>-->
+        <xsl:for-each select="following-sibling::subfield[1][@code = 'c']">
+            <xsl:choose>
+                <xsl:when test="following-sibling::subfield[1][@code = 'c']">
+                    <xsl:value-of select="."/>
+                    <xsl:text> ; </xsl:text>
+                    <xsl:call-template name="Z_PT_ACCES_2or4or710_11_sz_c">
+                        <xsl:with-param name="code_dep" select="$pos_c"/>
+                    </xsl:call-template>                    
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="."/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
     </xsl:template>
     <xsl:template name="Z_PT_ACCES_215_415_715">
         <xsl:param name="srcTag"/>
@@ -1965,15 +2099,16 @@
                 <xsl:value-of select="."/>
             </subfield>
         </xsl:for-each>
-        <!-- $y sous-zone répétable <= $z sous-zone répétable -->
-        <xsl:for-each select="subfield[@code = 'z'][text() != '']">
-            <subfield code="y">
+        <!-- $z sous-zone répétable <= $y sous-zone répétable -->
+        <!-- le 08/11/2024 : FML + JMF : inversion de l'ordre d'affichage du marc21 : le $z avant le $y   -->
+        <xsl:for-each select="subfield[@code = 'y'][text() != '']">
+            <subfield code="z">
                 <xsl:value-of select="."/>
             </subfield>
         </xsl:for-each>
-        <!-- $z sous-zone répétable <= $y sous-zone répétable -->
-        <xsl:for-each select="subfield[@code = 'y'][text() != '']">
-            <subfield code="z">
+        <!-- $y sous-zone répétable <= $z sous-zone répétable -->
+        <xsl:for-each select="subfield[@code = 'z'][text() != '']">
+            <subfield code="y">
                 <xsl:value-of select="."/>
             </subfield>
         </xsl:for-each>
@@ -2066,6 +2201,29 @@
             </datafield>
         </xsl:for-each>
     </xsl:template>
+    <!-- ERM décembre 2024 ajout de z822_75X fondé sur 822 et $type_notice-->
+    <!-- ERM décembre 2024 correction chaîne de $rolemap : ";" final-->
+    <xsl:template name="z822_75X">
+        <xsl:variable name="rolemap">;j=750;c=751;l=755;</xsl:variable>
+        <xsl:variable name="dstTag">
+            <xsl:value-of
+                select="substring-before(substring-after($rolemap, concat(';', $type_notice, '=')), ';')"
+            />
+        </xsl:variable>
+        <xsl:for-each select="datafield[@tag = '822']">
+            <datafield ind1="#" ind2="7" tag="{$dstTag}">
+                <subfield code="a">
+                    <xsl:value-of select="subfield[@code = 'a']"/>
+                </subfield>
+                <xsl:if test="subfield[@code = '2'] != ''">
+                    <subfield code="2">
+                        <xsl:value-of select="subfield[@code = '2']"/>
+                    </subfield>
+                </xsl:if>
+            </datafield>
+        </xsl:for-each>
+    </xsl:template>
+
     <!-- AJO 20/07: ajouté-->
     <xsl:template name="z898">
         <xsl:param name="srcTag"/>
@@ -2161,7 +2319,7 @@
     </xsl:template>
     <xsl:template name="copy-indicators">
         <!--ERM le 25/06/20 -->
-        <!--Traitements spécifiques sur les indicateurs de certaines zones en fonction du pramètre dstTag-->
+        <!--Traitements spécifiques sur les indicateurs de certaines zones en fonction du paramètre dstTag-->
         <!--AJO le 20/07 : $dstTag doit contenir étiquette destination; ind1/ind2 = " " et non # -->
         <!-- 300 -> 680
              305 -> 360
@@ -2224,37 +2382,42 @@
     </xsl:template>
     <!--Mapping des $5 unimarc pour i-->
     <!--AJ0 15/07 complété les codes avec |xxx -->
+    <!-- ERM décembre 2024 correction chaîne de $szi : ";" final-->
     <xsl:template name="szi_fromsz5">
         <xsl:param name="sz5"/>
         <xsl:variable name="szi"
-            >;a|xxx=Forme&#x20;antérieure&#x20;du&#x20;nom;b|xxx=Forme&#x20;postérieure&#x20;du&#x20;nom;e|xxx=Pseudonyme;f|xxx=Nom&#x20;à&#x20;l'état&#x20;civil;g|xxx=Terme&#x20;générique;h|xxx=Terme&#x20;spécifique;i|xxx=Nom&#x20;de&#x20;religion;j|xxx=Nom&#x20;de&#x20;mariage;k|xxx=Nom&#x20;de&#x20;jeune&#x20;fille;l|xxx=Pseudonyme&#x20;collectif;r|xxx=Regroupe;s|xxx=Regroupé&#x20;par;u|xxx=Inconnu;z|xxx=Autre;xxc=Descendant&#x20;de;xxd=Ascendant&#x20;de;xxe=Marié(e)&#x20;avec;xxg=Enfant&#x20;de;xxh=Parent&#x20;de;xxj=Frère/soeur&#x20;de;xxk=Membre&#x20;de;xxl=A&#x20;pour&#x20;membre;xxm=Fonde;xxn=Fondé&#x20;par;xxp=Collectivité&#x20;subordonnée;xxq=Fait&#x20;partie&#x20;de&#x20;la&#x20;collectivité;xxs=Possède;xxt=Possédé(e)&#x20;par;xxz=Autre</xsl:variable>
+            >;a|xxx=Forme&#x20;antérieure&#x20;du&#x20;nom;b|xxx=Forme&#x20;postérieure&#x20;du&#x20;nom;e|xxx=Pseudonyme;f|xxx=Nom&#x20;à&#x20;l'état&#x20;civil;g|xxx=Terme&#x20;générique;h|xxx=Terme&#x20;spécifique;i|xxx=Nom&#x20;de&#x20;religion;j|xxx=Nom&#x20;de&#x20;mariage;k|xxx=Nom&#x20;de&#x20;naissance;l|xxx=Pseudonyme&#x20;collectif;r|xxx=Regroupe;s|xxx=Regroupé&#x20;par;u|xxx=Inconnu;z|xxx=Autre;xxc=Descendant&#x20;de;xxd=Ascendant&#x20;de;xxe=Marié(e)&#x20;avec;xxg=Enfant&#x20;de;xxh=Parent&#x20;de;xxj=Frère/soeur&#x20;de;xxk=Membre&#x20;de;xxl=A&#x20;pour&#x20;membre;xxm=Fonde;xxn=Fondé&#x20;par;xxp=Collectivité&#x20;subordonnée;xxq=Fait&#x20;partie&#x20;de&#x20;la&#x20;collectivité;xxs=Possède;xxt=Possédé(e)&#x20;par;xxz=Autre;</xsl:variable>
         <xsl:value-of select="substring-before(substring-after($szi, concat(';', $sz5, '=')), ';')"
         />
     </xsl:template>
     <!--Mapping des codes types d'autorités-->
+    <!-- ERM décembre 2024 correction chaîne de $rolemap : ";" final-->
     <xsl:template name="typeAut">
         <xsl:param name="code"/>
         <xsl:variable name="rolemap"
             >;a=personne;b=collectivité/congrès;c=nom&#x20;géographique;d=marque;e=famille;f=titre;
-            h=auteur/titre;j=sujet;l=forme/genre</xsl:variable>
+            h=auteur/titre;j=sujet;l=forme/genre;</xsl:variable>
         <xsl:value-of
             select="substring-before(substring-after($rolemap, concat(';', $code, '=')), ';')"/>
     </xsl:template>
+    <!-- ERM décembre 2024 correction chaîne de $rolemap : ";" final-->
     <xsl:template name="z106c">
         <xsl:param name="code"/>
-        <xsl:variable name="rolemap">;0=&#x20;;1=i;2=i;3=i</xsl:variable>
+        <xsl:variable name="rolemap">;0=&#x20;;1=i;2=i;3=i;</xsl:variable>
         <xsl:value-of
             select="substring-before(substring-after($rolemap, concat(';', $code, '=')), ';')"/>
     </xsl:template>
+    <!-- ERM décembre 2024 correction chaîne de $rolemap : ";" final-->
     <xsl:template name="z106a">
         <xsl:param name="code"/>
-        <xsl:variable name="rolemap">;0=a;1=b</xsl:variable>
+        <xsl:variable name="rolemap">;0=a;1=b;</xsl:variable>
         <xsl:value-of
             select="substring-before(substring-after($rolemap, concat(';', $code, '=')), ';')"/>
     </xsl:template>
+    <!-- ERM décembre 2024 correction chaîne de $rolemap : ";" final-->
     <xsl:template name="z106b">
         <xsl:param name="code"/>
-        <xsl:variable name="rolemap">;0=f;1=a;2=d</xsl:variable>
+        <xsl:variable name="rolemap">;0=f;1=a;2=d;</xsl:variable>
         <xsl:value-of
             select="substring-before(substring-after($rolemap, concat(';', $code, '=')), ';')"/>
     </xsl:template>
