@@ -427,9 +427,11 @@
 			</xsl:if>
 
 
-			<!--	Ajout FML ; ajout juin 24 du $q et $r  -->
-			<xsl:for-each select="mx:datafield[@tag = '046']">
-				<datafield tag="103" ind1="#" ind2="#">
+			<!--	Ajout FML ; ajout 06/24 du $q et $r  -->
+			<!--	Ajout FML ; 04/26 gestion de la 046 répétable en marc21 -->
+			<xsl:if test="//mx:datafield[@tag = '046']/mx:subfield[text() != '']"/>
+			<datafield tag="103" ind1="#" ind2="#">			
+				<xsl:for-each select="mx:datafield[@tag = '046']">
 					<xsl:for-each select="mx:subfield[@code = 'f']">
 						<subfield code="a">
 							<xsl:value-of select="translate(., '-', '')"/>
@@ -460,8 +462,8 @@
 							<xsl:value-of select="translate(., '-', '')"/>
 						</subfield>
 					</xsl:for-each>
-				</datafield>
-			</xsl:for-each>
+				</xsl:for-each>
+			</datafield>
 
 
 
