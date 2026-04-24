@@ -505,7 +505,7 @@
 
 
 			<!-- FML : commenté 24/04/2026 -->
-			<! -- 
+			<!-- 
 			<xsl:variable name="exclusion-list" select="'XA XD XB'"/>
 			<xsl:if
 				test="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '' and not(contains($exclusion-list, text())) and string-length(normalize-space(text())) != 3]">
