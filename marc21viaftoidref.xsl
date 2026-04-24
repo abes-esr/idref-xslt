@@ -479,9 +479,34 @@
 				</xsl:if>
 			</xsl:for-each>
 
-			<!--	Ajout FML-->
-			<xsl:variable name="exclusion-list" select="'XA XD XB'"/>
 
+			<!-- Ajout FML : 24/04/2026 -->
+			
+			<!-- Ajout FML : 24/04/2026 --> 							
+				<xsl:if test="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '']">
+					<datafield tag="102" ind1="#" ind2="#">
+						<xsl:for-each select="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '']">
+							<xsl:variable name="z102sz_c">
+							<xsl:choose>
+								<xsl:when test="contains(.,'-')">
+									<xsl:value-of select="substring(substring-after(.,'-'),1,2)"/>								
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="."/>
+								</xsl:otherwise>	
+							</xsl:choose>
+							</xsl:variable>
+							<subfield code="a">
+								<xsl:value-of select="normalize-space(upper-case($z102sz_c))"/>
+							</subfield>
+						</xsl:for-each>
+					</datafield>
+				</xsl:if>
+
+
+			<!-- FML : commenté 24/04/2026 -->
+			<! -- 
+			<xsl:variable name="exclusion-list" select="'XA XD XB'"/>
 			<xsl:if
 				test="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '' and not(contains($exclusion-list, text())) and string-length(normalize-space(text())) != 3]">
 				<datafield tag="102" ind1="#" ind2="#">
@@ -500,7 +525,7 @@
 						</xsl:if>
 					</xsl:for-each>
 				</datafield>
-			</xsl:if>
+			</xsl:if> -->
 
 
 
