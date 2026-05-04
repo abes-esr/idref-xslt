@@ -429,7 +429,7 @@
 
 			<!--	Ajout FML ; ajout 06/24 du $q et $r  -->
 			<!--	Ajout FML ; 04/26 gestion de la 046 répétable en marc21 -->
-			<xsl:if test="//mx:datafield[@tag = '046']/mx:subfield[text() != '']"/>
+			<xsl:if test="mx:datafield[@tag = '046']/mx:subfield[text() != '']"/>
 			<datafield tag="103" ind1="#" ind2="#">			
 				<xsl:for-each select="mx:datafield[@tag = '046']">
 					<xsl:for-each select="mx:subfield[@code = 'f']">
@@ -483,9 +483,9 @@
 
 			
 			<!-- Ajout FML : 24/04/2026 --> 							
-				<xsl:if test="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '']">
+				<xsl:if test="mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '']">
 					<datafield tag="102" ind1="#" ind2="#">
-						<xsl:for-each select="//mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '']">
+						<xsl:for-each select="mx:datafield[@tag = '043']/mx:subfield[@code = 'c'][text() != '']">
 							<xsl:variable name="z102sz_c">
 							<xsl:choose>
 								<xsl:when test="contains(.,'-')">
