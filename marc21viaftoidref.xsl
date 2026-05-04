@@ -429,7 +429,7 @@
 
 			<!--	Ajout FML ; ajout 06/24 du $q et $r  -->
 			<!--	Ajout FML ; 04/26 gestion de la 046 répétable en marc21 -->
-			<xsl:if test="mx:datafield[@tag = '046']/mx:subfield[text() != '']"/>
+			<xsl:if test="mx:datafield[@tag = '046']/mx:subfield[text() != '']">
 			<datafield tag="103" ind1="#" ind2="#">			
 				<xsl:for-each select="mx:datafield[@tag = '046']">
 					<xsl:for-each select="mx:subfield[@code = 'f']">
@@ -464,6 +464,7 @@
 					</xsl:for-each>
 				</xsl:for-each>
 			</datafield>
+			</xsl:if>
 
 
 
